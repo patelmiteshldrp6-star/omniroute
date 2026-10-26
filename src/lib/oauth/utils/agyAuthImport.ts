@@ -1,8 +1,16 @@
+import { execFile } from "child_process";
+import { promisify } from "util";
+import fs from "fs/promises";
+import path from "path";
+import os from "os";
+
 import {
   getProviderConnections,
   createProviderConnection,
   updateProviderConnection,
 } from "@/lib/localDb";
+
+const execFileAsync = promisify(execFile);
 import { AGY_CONFIG } from "@/lib/oauth/constants/oauth";
 import {
   getAntigravityContentHeaders,
@@ -259,4 +267,191 @@ export async function createConnectionFromAgyToken(
   });
 
   return { connection, created: true };
+}
+
+
+/**
+ * Return candidate SQLite database paths for Antigravity IDE across platforms.
+ *
+ * - macOS: ~/Library/Application Support/Antigravity{ IDE}/User/globalStorage/state.vscdb
+ * - Windows: %APPDATA%/Antigravity{ IDE}/User/globalStorage/state.vscdb
+ * - Linux: ${XDG_CONFIG_HOME:-~/.config}/Antigravity{ IDE}/User/globalStorage/state.vscdb
+ */
+export function getAntigravityIdeDbCandidates(
+  platform: NodeJS.Platform = process.platform,
+  env: NodeJS.ProcessEnv = process.env,
+  home: string = os.homedir()
+): string[] {
+  const candidates: string[] = [];
+  const appNames = ["Antigravity", "Antigravity IDE"];
+
+  if (platform === "darwin") {
+    const joiner = path.posix ? path.posix.join : path.join;
+    const base = joiner(home, "Library", "Application Support");
+    for (const app of appNames) {
+      candidates.push(joiner(base, app, "User", "globalStorage", "state.vscdb"));
+    }
+  } else if (platform === "win32") {
+    const joiner = path.win32 ? path.win32.join : path.join;
+    const appdata = env.APPDATA || joiner(home, "AppData", "Roaming");
+    for (const app of appNames) {
+      candidates.push(joiner(appdata, app, "User", "globalStorage", "state.vscdb"));
+    }
+  } else {
+    const joiner = path.posix ? path.posix.join : path.join;
+    const configHome = env.XDG_CONFIG_HOME || joiner(home, ".config");
+    for (const app of appNames) {
+      candidates.push(joiner(configHome, app, "User", "globalStorage", "state.vscdb"));
+    }
+  }
+  return candidates;
+}
+
+/**
+ * Read the antigravityAuthStatus entry from an Antigravity IDE SQLite DB.
+ * Prefers the OmniRoute bundled SQLite driver (better-sqlite3 / node:sqlite),
+ * falling back gracefully to the sqlite3 CLI tool if present.
+ */
+export async function readAntigravityAuthStatusFromDb(dbPath: string): Promise<string | null> {
+  // 1. Prefer OmniRoute's driverFactory (better-sqlite3 / node:sqlite)
+  try {
+    const { tryOpenSync } = await import("@/lib/db/adapters/driverFactory");
+    const db = tryOpenSync(dbPath, { readonly: true, fileMustExist: true, timeout: 2000 });
+    if (db) {
+      try {
+        const row = db
+          .prepare("SELECT value FROM ItemTable WHERE key = 'antigravityAuthStatus'")
+          .get() as { value?: unknown } | undefined;
+        if (typeof row?.value === "string" && row.value.trim()) {
+          return row.value.trim();
+        }
+        if (row?.value && Buffer.isBuffer(row.value)) {
+          const str = row.value.toString("utf8").trim();
+          if (str) return str;
+        }
+      } finally {
+        db.close();
+      }
+    }
+  } catch {
+    // Driver unavailable or busy, fall back to CLI if present
+  }
+
+  // 2. Fallback to sqlite3 CLI tool (gracefully ignored if not installed on $PATH)
+  try {
+    const { stdout } = await execFileAsync(
+      "sqlite3",
+      [dbPath, "SELECT value FROM ItemTable WHERE key = 'antigravityAuthStatus';"],
+      { timeout: 3000 }
+    );
+    if (stdout && stdout.trim()) {
+      return stdout.trim();
+    }
+  } catch {
+    // sqlite3 CLI not installed (ENOENT) or query failed
+  }
+
+  return null;
+}
+
+/**
+ * Detect locally stored Antigravity credentials from:
+ * 1. Linux Secret Service keyring (secret-tool)
+ * 2. AGY_TOKEN_FILE environment variable override
+ * 3. Default CLI token files (~/.gemini/antigravity-cli/antigravity-oauth-token)
+ * 4. Multi-profile token files (~/.config/agentcontrol/profiles/...)
+ * 5. Antigravity IDE SQLite DB (~/.../Antigravity/User/globalStorage/state.vscdb)
+ */
+export async function detectLocalAgyTokenRaw(): Promise<{ raw: unknown; source: string }> {
+  const home = os.homedir();
+
+  // 1. Explicit env override
+  if (process.env.AGY_TOKEN_FILE && process.env.AGY_TOKEN_FILE.trim()) {
+    try {
+      const content = await fs.readFile(process.env.AGY_TOKEN_FILE.trim(), "utf8");
+      return { raw: JSON.parse(content), source: "env:AGY_TOKEN_FILE" };
+    } catch {}
+  }
+
+  // 2. Linux Secret Service / Keyring (secret-tool)
+  if (process.platform === "linux") {
+    try {
+      const { stdout } = await execFileAsync(
+        "secret-tool",
+        ["lookup", "service", "gemini", "username", "antigravity"],
+        { timeout: 3000 }
+      );
+      if (stdout && stdout.trim()) {
+        const parsed = JSON.parse(stdout.trim());
+        if (parsed.token?.refresh_token || parsed.refresh_token) {
+          return { raw: parsed, source: "secret-service" };
+        }
+      }
+    } catch {}
+  }
+
+  // 3. Default and legacy CLI token file locations
+  const fileCandidates = [
+    path.join(home, ".gemini", "antigravity-cli", "antigravity-oauth-token"),
+    path.join(home, ".gemini", "antigravity", "antigravity-oauth-token"),
+  ];
+
+  for (const candidate of fileCandidates) {
+    try {
+      const content = await fs.readFile(candidate, "utf8");
+      return { raw: JSON.parse(content), source: candidate };
+    } catch {}
+  }
+
+  // 4. AgentControl profile directories
+  const agentControlProfiles = path.join(home, ".config", "agentcontrol", "profiles");
+  try {
+    const entries = await fs.readdir(agentControlProfiles, { withFileTypes: true });
+    for (const ent of entries) {
+      if (ent.isDirectory()) {
+        const p = path.join(
+          agentControlProfiles,
+          ent.name,
+          ".gemini",
+          "antigravity-cli",
+          "antigravity-oauth-token"
+        );
+        try {
+          const content = await fs.readFile(p, "utf8");
+          return { raw: JSON.parse(content), source: p };
+        } catch {}
+      }
+    }
+  } catch {}
+
+  // 5. Antigravity IDE SQLite DB
+  const ideDbs = getAntigravityIdeDbCandidates();
+  for (const dbPath of ideDbs) {
+    try {
+      await fs.access(dbPath);
+      const authValue = await readAntigravityAuthStatusFromDb(dbPath);
+
+      if (authValue) {
+        const parsed = JSON.parse(authValue);
+        if (parsed.apiKey) {
+          return {
+            raw: {
+              token: {
+                access_token: parsed.apiKey,
+                refresh_token: parsed.apiKey,
+              },
+              id_token_email: parsed.email,
+            },
+            source: dbPath,
+          };
+        }
+      }
+    } catch {}
+  }
+
+  throw new AgyAuthFileError(
+    "No local Antigravity CLI or IDE login found. Run `agy`, sign in with Google, then try again.",
+    404,
+    "no_local_login"
+  );
 }
