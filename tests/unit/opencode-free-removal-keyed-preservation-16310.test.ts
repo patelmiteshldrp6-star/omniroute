@@ -8,7 +8,7 @@ const zenModels = [
   "opencode/big-pickle",
   "opencode/deepseek-v4.1-flash-free",
   "opencode/nemotron-3-super-free",
-  "opencode/mimo-v2.5-free",
+  "opencode/mimo-v2.6-flash-free",
   "opencode/north-mini-code-free",
   "opencode/nemotron-3-ultra-free",
 ];
