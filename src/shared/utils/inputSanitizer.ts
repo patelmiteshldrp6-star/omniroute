@@ -8,9 +8,16 @@
  */
 
 import { parseEnvBoolean } from "@/shared/utils/envBoolean";
-import { resolveBlockThreshold, shouldBlockDetections } from "@/shared/utils/injectionSeverity";
+import {
+  resolveBlockThreshold,
+  shouldBlockDetections,
+} from "@/shared/utils/injectionSeverity";
 import { PII_REQUEST_TYPE_ALIASES } from "@/shared/constants/piiTypes";
-import { TokenVaultManager, isReversibleVaultEnabled } from "@/lib/pii/tokenVault";
+import {
+  TokenVaultManager,
+  isReversibleVaultEnabled,
+  resolveVault,
+} from "@/lib/pii/tokenVault";
 
 // ─── Prompt Injection Patterns ───────────────────────────────────────
 
@@ -57,12 +64,14 @@ const INJECTION_PATTERNS = [
   },
   {
     name: "delimiter_injection",
-    pattern: /(\[SYSTEM\]|\[INST\]|<<SYS>>|<\|im_start\|>|<\|system\|>|<\|user\|>)/i,
+    pattern:
+      /(\[SYSTEM\]|\[INST\]|<<SYS>>|<\|im_start\|>|<\|system\|>|<\|user\|>)/i,
     severity: "high",
   },
   {
     name: "jailbreak_dan",
-    pattern: /\b(DAN|do\s+anything\s+now|jailbreak|developer\s+mode|enable\s+developer)\b/i,
+    pattern:
+      /\b(DAN|do\s+anything\s+now|jailbreak|developer\s+mode|enable\s+developer)\b/i,
     severity: "medium",
   },
   {
@@ -87,7 +96,7 @@ const INJECTION_PATTERNS = [
     pattern: new RegExp(
       `\\b(?:${AUTHORITY_FRAMING}\\b[\\s\\S]{0,${AUTHORITY_WINDOW}}?\\b${BYPASS_REQUEST}` +
         `|${BYPASS_REQUEST}\\b[\\s\\S]{0,${AUTHORITY_WINDOW}}?\\b${AUTHORITY_FRAMING})\\b`,
-      "i"
+      "i",
     ),
     severity: "medium",
   },
@@ -203,14 +212,16 @@ function collectPartText(part, contents) {
   else if (Array.isArray(part.content))
     for (const nested of part.content) {
       if (typeof nested === "string") contents.push(nested);
-      else if (nested && typeof nested.text === "string") contents.push(nested.text);
+      else if (nested && typeof nested.text === "string")
+        contents.push(nested.text);
     }
 }
 
 function extractMessageContents(body) {
   const contents = [];
 
-  const messageSource = body.messages !== undefined ? body.messages : body.input;
+  const messageSource =
+    body.messages !== undefined ? body.messages : body.input;
   const messages = Array.isArray(messageSource)
     ? messageSource
     : messageSource === undefined || messageSource === null
@@ -308,7 +319,9 @@ function detectInjection(text) {
 function resolvePiiRules(options) {
   const enabled = options?.enabledTypes ?? null;
   const builtins = enabled
-    ? PII_PATTERNS.filter((rule) => enabled.has(PII_REQUEST_TYPE_ALIASES[rule.name] ?? rule.name))
+    ? PII_PATTERNS.filter((rule) =>
+        enabled.has(PII_REQUEST_TYPE_ALIASES[rule.name] ?? rule.name),
+      )
     : PII_PATTERNS;
   const custom = (options?.customRules ?? []).map((rule) => ({
     name: rule.name,
@@ -335,9 +348,9 @@ function processPII(text, redact = false, options = undefined) {
       detections.push({ type: rule.name, count: matches.length });
       if (redact) {
         if (isReversibleVaultEnabled()) {
-          const vault = TokenVaultManager.getInstance();
+          const vault = resolveVault(options?.vault);
           processed = processed.replace(rule.pattern, (match: string) =>
-            vault.getOrCreateToken(rule.name, match)
+            vault.getOrCreateToken(rule.name, match),
           );
         } else {
           processed = processed.replace(rule.pattern, rule.replacement);
@@ -382,13 +395,16 @@ export function sanitizeRequest(body, logger = console) {
 
     if (logger[logLevel]) {
       logger[logLevel](
-        `[SANITIZER] Prompt injection detected: ${injections.map((d) => d.pattern).join(", ")}`
+        `[SANITIZER] Prompt injection detected: ${injections.map((d) => d.pattern).join(", ")}`,
       );
     }
 
     // Shared threshold policy with evaluatePromptInjection / createInjectionGuard.
     // Default threshold is "high" (medium is observe-only unless lowered via env).
-    if (config.mode === "block" && shouldBlockDetections(injections, config.blockThreshold)) {
+    if (
+      config.mode === "block" &&
+      shouldBlockDetections(injections, config.blockThreshold)
+    ) {
       result.blocked = true;
       return result;
     }
@@ -403,7 +419,7 @@ export function sanitizeRequest(body, logger = console) {
 
     if (piiResult.detections.length > 0) {
       logger.warn?.(
-        `[SANITIZER] PII detected: ${piiResult.detections.map((d) => `${d.type}(${d.count})`).join(", ")}`
+        `[SANITIZER] PII detected: ${piiResult.detections.map((d) => `${d.type}(${d.count})`).join(", ")}`,
       );
 
       // Deep clone and replace message contents with redacted versions
@@ -423,7 +439,8 @@ export function sanitizeRequest(body, logger = console) {
 function redactBody(body) {
   // Deep clone to avoid mutating original
   const clone = JSON.parse(JSON.stringify(body));
-  const messageSource = clone.messages !== undefined ? clone.messages : clone.input;
+  const messageSource =
+    clone.messages !== undefined ? clone.messages : clone.input;
   const messages = Array.isArray(messageSource)
     ? messageSource
     : messageSource === undefined || messageSource === null
@@ -448,8 +465,13 @@ function redactBody(body) {
             next.content = processPII(next.content, true).text;
           } else if (Array.isArray(next.content)) {
             next.content = next.content.map((nested) => {
-              if (typeof nested === "string") return processPII(nested, true).text;
-              if (nested && typeof nested === "object" && typeof nested.text === "string") {
+              if (typeof nested === "string")
+                return processPII(nested, true).text;
+              if (
+                nested &&
+                typeof nested === "object" &&
+                typeof nested.text === "string"
+              ) {
                 return { ...nested, text: processPII(nested.text, true).text };
               }
               return nested;
@@ -481,9 +503,13 @@ function redactBody(body) {
   });
 
   if (clone.messages !== undefined) {
-    clone.messages = Array.isArray(clone.messages) ? redactedMessages : redactedMessages[0];
+    clone.messages = Array.isArray(clone.messages)
+      ? redactedMessages
+      : redactedMessages[0];
   } else if (clone.input !== undefined) {
-    clone.input = Array.isArray(clone.input) ? redactedMessages : redactedMessages[0];
+    clone.input = Array.isArray(clone.input)
+      ? redactedMessages
+      : redactedMessages[0];
   }
 
   if (typeof clone.system === "string") {
@@ -493,8 +519,10 @@ function redactBody(body) {
       if (typeof entry === "string") return processPII(entry, true).text;
       if (entry && typeof entry === "object") {
         const next = { ...entry };
-        if (typeof next.text === "string") next.text = processPII(next.text, true).text;
-        if (typeof next.content === "string") next.content = processPII(next.content, true).text;
+        if (typeof next.text === "string")
+          next.text = processPII(next.text, true).text;
+        if (typeof next.content === "string")
+          next.content = processPII(next.content, true).text;
         return next;
       }
       return entry;
@@ -508,7 +536,7 @@ function redactBody(body) {
     clone.prompt = processPII(clone.prompt, true).text;
   } else if (Array.isArray(clone.prompt)) {
     clone.prompt = clone.prompt.map((entry) =>
-      typeof entry === "string" ? processPII(entry, true).text : entry
+      typeof entry === "string" ? processPII(entry, true).text : entry,
     );
   }
 

@@ -83,6 +83,18 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "info",
   },
   {
+    key: "PII_REVERSIBLE_VAULT_ENABLED",
+    label: "Reversible PII Token Vault",
+    description:
+      "Opt-in reversible PII pseudonymization vault: replaces detected PII with surrogate tokens upstream and restores original values on outbound responses",
+    descriptionI18nKey: "featureFlagPiiReversibleVaultEnabledDescription",
+    category: "security",
+    defaultValue: "false",
+    type: "boolean",
+    requiresRestart: false,
+    warningLevel: "info",
+  },
+  {
     key: "OUTBOUND_SSRF_GUARD_ENABLED",
     label: "SSRF Guard",
     description:
@@ -185,7 +197,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Control-Plane Proxy Direct Fallback",
     description:
       "Allow OAuth and provider validation flows to bypass a pinned proxy and connect directly when proxy reachability pre-checks fail. Off by default because this can change account egress IP.",
-    descriptionI18nKey: "featureFlagOmnirouteControlPlaneProxyDirectFallbackDescription",
+    descriptionI18nKey:
+      "featureFlagOmnirouteControlPlaneProxyDirectFallbackDescription",
     category: "network",
     defaultValue: "false",
     type: "boolean",
@@ -197,7 +210,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Network Rotation Shared-Egress Guard",
     description:
       "On a network exception (timeout, connection refused/reset) for a multi-account rotation executor, when the failing account has no dedicated proxy, apply a short cooldown and skip other proxy-less accounts for the rest of the request instead of retrying each one. On by default (safe: no egress IP change, only reduces latency/cooldown risk on shared-egress accounts). Disable to restore immediate propagation on the first proxy-less throw.",
-    descriptionI18nKey: "featureFlagNetworkRotationSharedEgressGuardDescription",
+    descriptionI18nKey:
+      "featureFlagNetworkRotationSharedEgressGuardDescription",
     category: "network",
     defaultValue: "true",
     type: "boolean",
@@ -293,7 +307,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "OpenCode Transient Failover Backoff",
     description:
       "For the OpenCode multi-account rotation, pause before dispatching to the next account once two consecutive attempts failed with a transient upstream error (5xx or an empty 400 rejection). The pause starts at 1.5s, doubles per further consecutive failure, is capped at 6s per pause and 10s per request, is skipped when the client disconnects, and the failed response body is released before waiting. Off by default: failover stays immediate.",
-    descriptionI18nKey: "featureFlagOpencodeTransientFailoverBackoffDescription",
+    descriptionI18nKey:
+      "featureFlagOpencodeTransientFailoverBackoffDescription",
     category: "network",
     defaultValue: "false",
     type: "boolean",
@@ -317,7 +332,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Empty Stream Sibling Recovery",
     description:
       "Claude/Codex streaming: after the first lifecycle event, briefly probe (up to 1s / 64 KiB) for usable output; a stream that ends with no content becomes an empty_content failure that spends the existing bounded retry on another eligible connection (no cooldown, no model lockout), and round-robin combos stop retrying once the client disconnects. Also treats refusal, pause_turn and model_context_window_exceeded as legitimate empty terminals inside the probe. Off by default: readiness, empty-content handling and combo retries stay exactly as before.",
-    descriptionI18nKey: "featureFlagEmptyStreamSiblingRecoveryEnabledDescription",
+    descriptionI18nKey:
+      "featureFlagEmptyStreamSiblingRecoveryEnabledDescription",
     category: "network",
     defaultValue: "false",
     type: "boolean",
@@ -389,7 +405,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "OpenCode v2 Client Fingerprint",
     description:
       'Send the OpenCode v2 CLI client fingerprint on OpenCode Zen/Go requests (#16571): User-Agent opencode/latest/<2.x>/cli and x-opencode-client cli, a client User-Agent kept only when it is a 2.x OpenCode client, and on gated free-tier requests no x-opencode-request, the session mirrored onto x-opencode-session-id/x-session-affinity/x-session-id, the v2 CLI read/shell schemas on injected placeholder tools and a tool_choice of "none" dropped. Off by default: every OpenCode request keeps the current identity, headers and body byte for byte.',
-    descriptionI18nKey: "featureFlagOpencodeV2ClientFingerprintEnabledDescription",
+    descriptionI18nKey:
+      "featureFlagOpencodeV2ClientFingerprintEnabledDescription",
     category: "network",
     defaultValue: "false",
     type: "boolean",
@@ -413,7 +430,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "OpenCode Full-Text Error Rules",
     description:
       'Let the built-in OpenCode error rules (opencode-zen, opencode-go, opencode-cli) match on the full upstream error text, so body markers such as organization_quota_exceeded or "monthly usage limit reached" classify a 429 as quota exhausted with a connection-scoped lock. Off by default: those rules only see the structured error code and such a 429 stays a short rate limit, exactly as before.',
-    descriptionI18nKey: "featureFlagOpencodeFullTextErrorRulesEnabledDescription",
+    descriptionI18nKey:
+      "featureFlagOpencodeFullTextErrorRulesEnabledDescription",
     category: "network",
     defaultValue: "false",
     type: "boolean",
@@ -425,7 +443,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Cloudflare Workers AI Full-Text Error Rules",
     description:
       'Let the built-in Cloudflare Workers AI error rule match on the full upstream error text, so the 429 "daily free allocation" body is classified as quota exhausted instead of a short rate limit. Off by default: the rule only sees the structured error code, exactly as before.',
-    descriptionI18nKey: "featureFlagCloudflareAiFullTextErrorRulesEnabledDescription",
+    descriptionI18nKey:
+      "featureFlagCloudflareAiFullTextErrorRulesEnabledDescription",
     category: "network",
     defaultValue: "false",
     type: "boolean",
@@ -448,7 +467,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Allow Private Provider URLs",
     description:
       "Turns off the outbound URL guard's host checks, cloud-metadata block included, on provider URL validation, model discovery, provider-node base URLs, and the proxy-fallback test, and allows private webhook targets. Local and LAN URLs already pass on the validation, discovery, and provider-node paths by default; the proxy-fallback test and webhook targets check only this flag",
-    descriptionI18nKey: "featureFlagOmnirouteAllowPrivateProviderUrlsDescription",
+    descriptionI18nKey:
+      "featureFlagOmnirouteAllowPrivateProviderUrlsDescription",
     category: "network",
     defaultValue: "false",
     type: "boolean",
@@ -556,7 +576,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Model Endpoint Capability Gate",
     description:
       "Enforce trusted model endpoint tags (declared by the provider catalog, inferred from a specialty model id, or set by the operator): reject a request sent to an endpoint the model does not serve with HTTP 400 before dispatch on /v1/chat/completions, /v1/embeddings, /v1/rerank, /v1/images/generations, /v1/videos/generations, /v1/music/generations and /v1/audio/*; hide models whose tagged endpoints have no OmniRoute adapter from /v1/models; and answer the dashboard model test with 422 for such models. Off by default: endpoint tags stay informational and requests are dispatched exactly as before.",
-    descriptionI18nKey: "featureFlagModelEndpointCapabilityGateEnabledDescription",
+    descriptionI18nKey:
+      "featureFlagModelEndpointCapabilityGateEnabledDescription",
     category: "policies",
     defaultValue: "false",
     type: "boolean",
@@ -594,7 +615,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Drop Responses Commentary",
     description:
       "Drop internal commentary-phase output items from Responses API passthrough streams before forwarding to clients. Disable to receive raw upstream commentary.",
-    descriptionI18nKey: "featureFlagResponsesPassthroughDropCommentaryDescription",
+    descriptionI18nKey:
+      "featureFlagResponsesPassthroughDropCommentaryDescription",
     category: "runtime",
     defaultValue: "true",
     type: "boolean",
@@ -618,7 +640,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     key: "OMNIROUTE_MCP_COMPRESS_DESCRIPTIONS",
     label: "MCP Compress Descriptions",
     description: "Compress MCP tool descriptions to reduce token usage",
-    descriptionI18nKey: "featureFlagOmnirouteMcpCompressDescriptionsDescription",
+    descriptionI18nKey:
+      "featureFlagOmnirouteMcpCompressDescriptionsDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -629,7 +652,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     key: "OMNIROUTE_ENABLE_RUNTIME_BACKGROUND_TASKS",
     label: "Runtime Background Tasks",
     description: "Enable background task processing at runtime",
-    descriptionI18nKey: "featureFlagOmnirouteEnableRuntimeBackgroundTasksDescription",
+    descriptionI18nKey:
+      "featureFlagOmnirouteEnableRuntimeBackgroundTasksDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -640,7 +664,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     key: "OMNIROUTE_DISABLE_BACKGROUND_SERVICES",
     label: "Disable Background Services",
     description: "Disable all background services (quota refresh, sync, etc)",
-    descriptionI18nKey: "featureFlagOmnirouteDisableBackgroundServicesDescription",
+    descriptionI18nKey:
+      "featureFlagOmnirouteDisableBackgroundServicesDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -697,7 +722,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
   {
     key: "OMNIROUTE_EMERGENCY_FALLBACK",
     label: "Emergency Fallback",
-    description: "Route budget-exhausted requests to the emergency free fallback provider/model.",
+    description:
+      "Route budget-exhausted requests to the emergency free fallback provider/model.",
     descriptionI18nKey: "featureFlagOmnirouteEmergencyFallbackDescription",
     category: "runtime",
     defaultValue: "true",
@@ -746,7 +772,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Early-EOF Sibling Failover",
     description:
       "Fail over once to a sibling connection when an SSE stream closes before emitting any useful frame and the bounded same-connection retry is spent; with no usable sibling the original STREAM_EARLY_EOF 502 is returned. Off by default: early-EOF stays terminal after the same-connection retry.",
-    descriptionI18nKey: "featureFlagStreamEarlyEofSiblingFailoverEnabledDescription",
+    descriptionI18nKey:
+      "featureFlagStreamEarlyEofSiblingFailoverEnabledDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -781,7 +808,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
   {
     key: "ARENA_ELO_SYNC_ENABLED",
     label: "Arena ELO Sync",
-    description: "Enable periodic Arena AI leaderboard ELO sync for model intelligence rankings.",
+    description:
+      "Enable periodic Arena AI leaderboard ELO sync for model intelligence rankings.",
     descriptionI18nKey: "featureFlagArenaEloSyncEnabledDescription",
     category: "runtime",
     defaultValue: "true",
@@ -818,7 +846,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Disable Thinking Level Variants",
     description:
       "Disable the generation of thinking level variants (e.g. -low, -medium, -high) in the /v1/models catalog.",
-    descriptionI18nKey: "featureFlagOmnirouteDisableThinkingLevelVariantsDescription",
+    descriptionI18nKey:
+      "featureFlagOmnirouteDisableThinkingLevelVariantsDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -879,7 +908,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Hide Deleted Search Connections",
     description:
       "Search stats and recent searches only count providers that still have a live connection (keyless providers such as duckduckgo-free always count). Off keeps every retained search row with a provider id.",
-    descriptionI18nKey: "featureFlagSearchStatsHideDeletedConnectionsDescription",
+    descriptionI18nKey:
+      "featureFlagSearchStatsHideDeletedConnectionsDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -891,7 +921,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Strict Free Badge",
     description:
       "Dashboard provider pages: show the Free badge only on signals the provider honors — drops the display-name heuristic, non-boolean free fields and :free suffixes on registered providers without a documented free tier. Off keeps the historical badge rule.",
-    descriptionI18nKey: "featureFlagFreeBadgeRequiresProviderFreeTierDescription",
+    descriptionI18nKey:
+      "featureFlagFreeBadgeRequiresProviderFreeTierDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -915,7 +946,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Protected-Priority Infra Stops as 502",
     description:
       "When a priority combo target marked fallback-only-on-quota-exhaustion stops the combo for a cause that is provably not quota (provider circuit breaker open, predictive latency skip), answer 502 instead of the quota-looking 503. Lockout, cooldown, unavailable, exhaustion and concurrency-cap stops keep 503.",
-    descriptionI18nKey: "featureFlagProtectedPriorityInfra502EnabledDescription",
+    descriptionI18nKey:
+      "featureFlagProtectedPriorityInfra502EnabledDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -927,7 +959,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Auto Combo: Empty Pool Answers 503",
     description:
       'When an auto combo\'s candidate pool is already empty before the tool-calling pre-filter runs (every target skipped by cooldowns, lockouts or exhaustion), answer 503 no_eligible_targets instead of the legacy 400 "No target supports tool calling" capability_mismatch. Off by default: the empty pool keeps the legacy 400.',
-    descriptionI18nKey: "featureFlagComboEmptyPoolNoEligibleTargetsEnabledDescription",
+    descriptionI18nKey:
+      "featureFlagComboEmptyPoolNoEligibleTargetsEnabledDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -987,7 +1020,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Claude OAuth Summarized Thinking",
     description:
       'Let a Claude OAuth request that asks for readable thinking (thinking.display "summarized") drop the redact-thinking-2026-02-12 Anthropic beta, which otherwise makes Anthropic return empty, signature-only thinking blocks. Off by default: that beta is part of the Claude Code OAuth wire fingerprint, so OAuth requests keep it unchanged. API-key Claude requests already honor summarized thinking without this flag; OMNIROUTE_REDACT_THINKING=false also reaches OAuth only when this flag is on.',
-    descriptionI18nKey: "featureFlagClaudeOauthSummarizedThinkingUnredactedDescription",
+    descriptionI18nKey:
+      "featureFlagClaudeOauthSummarizedThinkingUnredactedDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -1035,7 +1069,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Native Codex Reactive Compaction",
     description:
       "Let the reactive (threshold) and last-resort context compaction passes also rewrite native Codex passthrough histories (POST /v1/responses to the codex provider) when they exceed the context budget, using the Responses input[] adapter. Off by default: native Codex histories are owned by the Codex client and are never rewritten by compaction; oversized requests keep failing the context budget check exactly as before. Requires global compression to be on and the model not to be excluded.",
-    descriptionI18nKey: "featureFlagNativeCodexReactiveCompactionEnabledDescription",
+    descriptionI18nKey:
+      "featureFlagNativeCodexReactiveCompactionEnabledDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -1145,7 +1180,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     key: "OMNIROUTE_DISABLE_LOCAL_HEALTHCHECK",
     label: "Disable Local Health Check",
     description: "Disable the local instance health check endpoint",
-    descriptionI18nKey: "featureFlagOmnirouteDisableLocalHealthcheckDescription",
+    descriptionI18nKey:
+      "featureFlagOmnirouteDisableLocalHealthcheckDescription",
     category: "health",
     defaultValue: "false",
     type: "boolean",
@@ -1156,7 +1192,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     key: "OMNIROUTE_DISABLE_TOKEN_HEALTHCHECK",
     label: "Disable Token Health Check",
     description: "Disable the token validation health check",
-    descriptionI18nKey: "featureFlagOmnirouteDisableTokenHealthcheckDescription",
+    descriptionI18nKey:
+      "featureFlagOmnirouteDisableTokenHealthcheckDescription",
     category: "health",
     defaultValue: "false",
     type: "boolean",
@@ -1215,7 +1252,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Anthropic-Compatible Mid-Conversation System Turns",
     description:
       "On plain anthropic-compatible-* relays (claude → claude passthrough), keep mid-conversation role:system turns inside messages[] instead of hoisting them into the top-level system parameter, so the cached prompt prefix stays stable across turns. Applies only when the client itself sent the mid-conversation-system-2026-04-07 anthropic-beta (forwarded upstream as-is). Off by default: every system turn is hoisted exactly as before, because relays that do not support the beta reject role:system messages with 400.",
-    descriptionI18nKey: "featureFlagAnthropicCompatibleMidConversationSystemDescription",
+    descriptionI18nKey:
+      "featureFlagAnthropicCompatibleMidConversationSystemDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -1227,7 +1265,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "DB Health Check: Defer Startup Scan",
     description:
       "Run the startup DB integrity/health check after the server starts accepting requests (via setImmediate) instead of blocking startup until it completes. Off by default: startup blocks on the check exactly like before #13717, so a corrupt database is still caught before the first request is served. On: startup returns immediately and the check (now bounded/paged and, for a real file-backed DB, isolated in a cancellable child process) runs right after.",
-    descriptionI18nKey: "featureFlagDbHealthcheckStartupDeferredEnabledDescription",
+    descriptionI18nKey:
+      "featureFlagDbHealthcheckStartupDeferredEnabledDescription",
     category: "health",
     defaultValue: "false",
     type: "boolean",
@@ -1239,7 +1278,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "OpenCode Published Catalog Routing",
     description:
       "Let OpenCode Zen and OpenCode Go models without an explicit registry endpoint take their request surface (Responses for @ai-sdk/openai, Messages for @ai-sdk/anthropic) from the published models.opencode.ai catalog, read in the background every 6 h. Off by default: the endpoint comes from the registry heuristics exactly as before and the catalog is never fetched.",
-    descriptionI18nKey: "featureFlagOpencodePublishedCatalogRoutingEnabledDescription",
+    descriptionI18nKey:
+      "featureFlagOpencodePublishedCatalogRoutingEnabledDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -1299,7 +1339,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Credential Health: Retest Auto-Disabled Connections",
     description:
       "Let the credential health sweep retest connections the gateway switched off by itself (marked autoDisabledAt; at most once per 6 h each and 5 per sweep) and switch a connection back on when its retest passes (#16190). Off by default: switched-off connections stay off until an operator re-enables or re-tests them, exactly like before. Operator-disabled connections and connections switched off after a permanent ban are never retested.",
-    descriptionI18nKey: "featureFlagCredentialHealthRetestAutoDisabledDescription",
+    descriptionI18nKey:
+      "featureFlagCredentialHealthRetestAutoDisabledDescription",
     category: "health",
     defaultValue: "false",
     type: "boolean",
@@ -1323,7 +1364,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Combo: Stop on Content-Policy Refusal",
     description:
       "When a combo target answers with an exact content-policy refusal (code or type cyber_policy / content_policy_violation), stop the combo and return that refusal even when the remaining targets are different models, instead of advancing to the next target. Off by default: the refusal never cools the account or trips the provider breaker, and the combo advances to its next target exactly as before.",
-    descriptionI18nKey: "featureFlagContentPolicyRefusalComboStopEnabledDescription",
+    descriptionI18nKey:
+      "featureFlagContentPolicyRefusalComboStopEnabledDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -1335,7 +1377,8 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     label: "Cooldown Retry: Skip 403/410 Refusals",
     description:
       "When every account is cooling down and the cooldown that ends first was caused by a 403 (access refused) or a 410 (gone), return that refusal at once instead of waiting the cooldown out and re-sending the request; a renewing agentrouter connection-scoped quota 403 is then persisted with errorCode 429 so it stays retryable. Off by default: only a 401 skips the wait, and every refusal is persisted with the status it arrived with.",
-    descriptionI18nKey: "featureFlagCooldownRetrySkipRefusalsEnabledDescription",
+    descriptionI18nKey:
+      "featureFlagCooldownRetrySkipRefusalsEnabledDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",

@@ -1,1 +1,1 @@
-- **feat(pii):** reversible token vault for streaming and non-streaming responses — thanks @Ardem2025
+- **feat(pii):** reversible token vault with request-scoped nonces for streaming and non-streaming responses — thanks @Ardem2025
