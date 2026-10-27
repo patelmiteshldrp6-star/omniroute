@@ -801,12 +801,21 @@ export async function resolvePersistedConnectionCooldownSkipReason(
 export function isContextOverflow400(errorText: string | null | undefined): boolean {
   const text = String(errorText || "");
   if (!text) return false;
+  if (/maximum input tokens?\s+per\s+(?:minute|second|hour|day)\b/i.test(text)) return false;
   return (
     /\bcontext.*(?:length_exceeded|too long|overflow|exceeded|window|limit)\b/i.test(text) ||
     /exceeds.*context/i.test(text) ||
+    /input exceeds maximum input tokens(?:\s*[,.]|$)/i.test(text) ||
     /your input exceeds/i.test(text) ||
     CONTEXT_OVERFLOW_PATTERNS.some((p) => p.test(text))
   );
+}
+
+export function isContextOverflowFailure(
+  errorText: string | null | undefined,
+  error?: { code?: string | null; type?: string | null }
+): boolean {
+  return isInputBoundRequestFailure(error) || isContextOverflow400(errorText);
 }
 
 /** @param {string} errorText */
