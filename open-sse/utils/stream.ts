@@ -1,6 +1,7 @@
 import { translateResponse, initState } from "../translator/index.ts";
 import { FORMATS } from "../translator/formats.ts";
 import { appendRequestLog } from "@/lib/usageDb";
+import type { PendingRequestIdentity } from "./pendingRequestCleanup.ts";
 import { clearPendingRequestOnce } from "./pendingRequestCleanup.ts";
 import { resolveTrailingUsageSummary } from "./passthroughTrailingUsage.ts";
 import { createByteLengthQueueStrategies } from "./byteQueueStrategy.ts";
@@ -135,6 +136,7 @@ export { formatSSE };
 export { backfillResponsesCompletedOutput, stripResponsesLifecycleEcho };
 
 type JsonRecord = Record<string, unknown>;
+type StreamPendingRequestIdentity = PendingRequestIdentity | false;
 
 export const PENDING_REQUEST_CLEARED_MARKER = "__omniroutePendingRequestCleared";
 
@@ -232,7 +234,7 @@ type StreamOptions = {
    * codex-compatible `namespace` + `name` fields.
    */
   requestToolIdentityMap?: Map<string, { namespace: string; name: string }> | null;
-  pendingRequestId?: string | null;
+  pendingRequestId?: StreamPendingRequestIdentity | null;
 };
 
 type TranslateState = ReturnType<typeof initState> & {
@@ -1138,9 +1140,22 @@ export function createSSEStream(options: StreamOptions = {}) {
     }
   };
 
+  // Transport adapters leave pending cleanup and ownership markers to their outer request.
+  const markStreamPendingRequestCleared = (error: Error) =>
+    pendingRequestId === false ? error : markPendingRequestCleared(error);
   const clearSeen = { done: false };
   const clearPendingRequestFromStream = () => {
-    clearPendingRequestOnce(clearSeen, { model, provider, connectionId, pendingRequestId });
+    if (clearSeen.done || pendingRequestId === false) return;
+    if (typeof pendingRequestId === "string" && !connectionId) {
+      clearSeen.done = true;
+      return;
+    }
+    clearPendingRequestOnce(clearSeen, {
+      model,
+      provider,
+      connectionId,
+      pendingRequestId,
+    });
   };
 
   const emitClaudeEmptyStreamErrorAndAbort = (
@@ -1184,7 +1199,7 @@ export function createSSEStream(options: StreamOptions = {}) {
     // and the 502 surfaces with no retry (call logs 96ef4a / 062cf6).
     const emptyStreamError = new Error(msg) as Error & { code?: string };
     emptyStreamError.code = "empty_response";
-    controller.error(markPendingRequestCleared(emptyStreamError));
+    controller.error(markStreamPendingRequestCleared(emptyStreamError));
   };
 
   const emitTranslatedClientItem = (
@@ -1367,7 +1382,7 @@ export function createSSEStream(options: StreamOptions = {}) {
     buildClientPayload: (body) => clientPayloadCollector.build(body, { includeEvents: false }),
     clearIdleTimer,
     clearPendingRequest: clearPendingRequestFromStream,
-    markPendingRequestCleared,
+    markPendingRequestCleared: markStreamPendingRequestCleared,
     model,
   });
 
@@ -1428,7 +1443,7 @@ export function createSSEStream(options: StreamOptions = {}) {
               }).catch(() => {});
               const timeoutError = new Error(timeoutMsg);
               timeoutError.name = "StreamIdleTimeoutError";
-              controller.error(markPendingRequestCleared(timeoutError));
+              controller.error(markStreamPendingRequestCleared(timeoutError));
             }
           }, 10_000);
         }
@@ -3121,7 +3136,7 @@ export function createSSEStream(options: StreamOptions = {}) {
               clearPendingRequestFromStream,
             })
           ) {
-            controller.error(markPendingRequestCleared(buildEmptyChoicesStreamError()));
+            controller.error(markStreamPendingRequestCleared(buildEmptyChoicesStreamError()));
             return;
           }
 
@@ -3361,7 +3376,8 @@ export function createSSETransformStreamWithLogger(
   customToolNames: ReadonlySet<string> = new Set(),
   requestToolIdentityMap: Map<string, { namespace: string; name: string }> | null = null,
   clientTools: unknown = null,
-  streamBufferBytes: number = DEFAULT_STREAM_BUFFER_BYTES
+  streamBufferBytes: number = DEFAULT_STREAM_BUFFER_BYTES,
+  pendingRequestId: StreamPendingRequestIdentity | null = null
 ) {
   return createSSEStream({
     mode: STREAM_MODE.TRANSLATE,
@@ -3383,6 +3399,7 @@ export function createSSETransformStreamWithLogger(
     requestToolIdentityMap,
     streamBufferBytes,
     clientTools,
+    pendingRequestId,
   });
 }
 
@@ -3398,7 +3415,8 @@ export function createPassthroughStreamWithLogger(
   onFailure: ((payload: StreamFailurePayload) => boolean | void | Promise<void>) | null = null,
   clientResponseFormat: string | null = null,
   requestToolIdentityMap: Map<string, { namespace: string; name: string }> | null = null,
-  clientTools: unknown = null
+  clientTools: unknown = null,
+  pendingRequestId: StreamPendingRequestIdentity | null = null
 ) {
   return createSSEStream({
     mode: STREAM_MODE.PASSTHROUGH,
@@ -3414,6 +3432,7 @@ export function createPassthroughStreamWithLogger(
     clientResponseFormat,
     requestToolIdentityMap,
     clientTools,
+    pendingRequestId,
   });
 }
 

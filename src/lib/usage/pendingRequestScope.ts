@@ -4,10 +4,12 @@ import {
   updatePendingRequest,
   updatePendingRequestById,
   type PendingRequestMetadata,
+  type PendingRequestOwner,
 } from "./usageHistory";
 
 export type PendingRequestScope = {
   id: string | null | undefined;
+  owner?: PendingRequestOwner;
   model: string;
   provider: string;
   connectionId: string | null;
@@ -66,8 +68,8 @@ function protectPendingMetadata(
 
 export function updatePendingScope(scope: PendingRequestScope, metadata: PendingRequestMetadata) {
   const retainedMetadata = protectPendingMetadata(scope, metadata);
-  if (scope.id) {
-    updatePendingRequestById(scope.id, retainedMetadata);
+  if (scope.owner || scope.id) {
+    updatePendingRequestById(scope.owner ?? scope.id, retainedMetadata);
   } else {
     updatePendingRequest(scope.model, scope.provider, scope.connectionId, retainedMetadata);
   }
@@ -75,8 +77,8 @@ export function updatePendingScope(scope: PendingRequestScope, metadata: Pending
 
 export function finalizePendingScope(scope: PendingRequestScope, metadata: PendingRequestMetadata) {
   const retainedMetadata = protectPendingMetadata(scope, metadata);
-  if (scope.id) {
-    finalizePendingRequestById(scope.id, retainedMetadata);
+  if (scope.owner || scope.id) {
+    finalizePendingRequestById(scope.owner ?? scope.id, retainedMetadata);
   } else {
     finalizePendingRequest(scope.model, scope.provider, scope.connectionId, retainedMetadata);
   }
