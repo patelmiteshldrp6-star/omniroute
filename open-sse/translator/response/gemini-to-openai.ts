@@ -648,8 +648,15 @@ export function geminiToOpenAIResponse(chunk, state) {
   // Usage metadata - extract before finish reason so we can include it
   const usageMeta = response.usageMetadata || chunk.usageMetadata;
   if (usageMeta && typeof usageMeta === "object") {
-    const cachedTokens =
-      typeof usageMeta.cachedContentTokenCount === "number" ? usageMeta.cachedContentTokenCount : 0;
+    // Explicit zero is real telemetry; an absent cache field is unknown.
+    // Preserve a previously reported count across later partial metadata frames.
+    const reportedCachedTokens =
+      typeof usageMeta.cachedContentTokenCount === "number" &&
+      Number.isFinite(usageMeta.cachedContentTokenCount) &&
+      usageMeta.cachedContentTokenCount >= 0
+        ? usageMeta.cachedContentTokenCount
+        : undefined;
+    const cachedTokens = reportedCachedTokens ?? state.usage?.prompt_tokens_details?.cached_tokens;
     const promptTokenCountRaw =
       typeof usageMeta.promptTokenCount === "number" ? usageMeta.promptTokenCount : 0;
     const thoughtsTokens =
@@ -678,8 +685,8 @@ export function geminiToOpenAIResponse(chunk, state) {
       total_tokens: totalTokens || promptTokens + completionTokens,
     };
 
-    // Add prompt_tokens_details if cached tokens exist
-    if (cachedTokens > 0) {
+    // Zero is a reported value, not proof of missing provider statistics.
+    if (cachedTokens !== undefined) {
       state.usage.prompt_tokens_details = {
         cached_tokens: cachedTokens,
       };

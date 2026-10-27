@@ -74,23 +74,34 @@ for (const format of [FORMATS.ANTIGRAVITY, FORMATS.GEMINI]) {
     assert.equal(extracted.cache_read_input_tokens, 17000);
   });
 
-  for (const control of [
-    { name: "zero", metadata: { cachedContentTokenCount: 0 } },
-    { name: "missing", metadata: {} },
-  ]) {
-    test(`${format}: ${control.name} cache keeps the existing plain usage shape`, () => {
-      const parsed = bufferedResponse(control.metadata, format);
-      const client = translateNonStreamingResponse(parsed.body, parsed.format, FORMATS.OPENAI);
-      assert.deepEqual(client.usage, {
-        prompt_tokens: 18020,
-        completion_tokens: 4,
-        total_tokens: 18024,
-      });
-      assert.equal(extractUsageFromResponse(client, "antigravity").cached_tokens, undefined);
-      const claude = translateNonStreamingResponse(parsed.body, parsed.format, FORMATS.CLAUDE);
-      assert.deepEqual(claude.usage, { input_tokens: 18020, output_tokens: 4 });
+  test(`${format}: missing cache keeps the existing plain usage shape`, () => {
+    const parsed = bufferedResponse({}, format);
+    const client = translateNonStreamingResponse(parsed.body, parsed.format, FORMATS.OPENAI);
+    assert.deepEqual(client.usage, {
+      prompt_tokens: 18020,
+      completion_tokens: 4,
+      total_tokens: 18024,
     });
-  }
+    assert.equal(extractUsageFromResponse(client, "antigravity").cached_tokens, undefined);
+    const claude = translateNonStreamingResponse(parsed.body, parsed.format, FORMATS.CLAUDE);
+    assert.deepEqual(claude.usage, { input_tokens: 18020, output_tokens: 4 });
+  });
+
+  // Explicit zero is a reported value ("no cache hit"), distinct from "not reported":
+  // OpenAI clients and usage extraction now see cached_tokens: 0 (#18100).
+  test(`${format}: zero cache is surfaced as an explicit cached_tokens: 0`, () => {
+    const parsed = bufferedResponse({ cachedContentTokenCount: 0 }, format);
+    const client = translateNonStreamingResponse(parsed.body, parsed.format, FORMATS.OPENAI);
+    assert.deepEqual(client.usage, {
+      prompt_tokens: 18020,
+      completion_tokens: 4,
+      total_tokens: 18024,
+      prompt_tokens_details: { cached_tokens: 0 },
+    });
+    assert.equal(extractUsageFromResponse(client, "antigravity").cached_tokens, 0);
+    const claude = translateNonStreamingResponse(parsed.body, parsed.format, FORMATS.CLAUDE);
+    assert.deepEqual(claude.usage, { input_tokens: 18020, output_tokens: 4 });
+  });
 
   test(`${format}: upstream total stays authoritative with cached input`, () => {
     const parsed = bufferedResponse(
