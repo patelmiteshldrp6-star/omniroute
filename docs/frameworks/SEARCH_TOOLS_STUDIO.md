@@ -105,7 +105,7 @@ Runs the same query/URL across up to **4 providers in parallel** (D22):
 `ProviderCatalog.tsx` exposes the full provider list from `GET /api/search/providers`
 (extended in F4 to include fetch providers):
 
-| `kind` | `"search"` (20 providers) or `"fetch"` (firecrawl, jina-reader, tavily-search, tinyfish, nimble-search, anysearch-search, parallel-search) |
+| `kind` | `"search"` (22 providers) or `"fetch"` (firecrawl, jina-reader, tavily-search, tinyfish, nimble-search, anysearch-search, parallel-search) |
 
 The status is **derived at request time** by checking whether credentials exist and whether
 all keys are currently in cooldown.

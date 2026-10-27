@@ -45,6 +45,7 @@ import { getSettings } from "@/lib/db/settings";
 import { isProviderBlockedByIdOrAlias } from "@/shared/utils/noAuthProviders";
 import { withInjectionGuard } from "@/middleware/promptInjectionGuard";
 import { saveCallLog } from "@/lib/usageDb";
+import { isModelLocked } from "@omniroute/open-sse/services/accountFallback.ts";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -98,7 +99,14 @@ async function resolveSearchCredentials(
       () => null
     )
   );
-  if (credentials && !isAllRateLimitedCredentials(credentials)) return credentials;
+  if (credentials && !isAllRateLimitedCredentials(credentials)) {
+    if (
+      providerId === "codex-search" &&
+      isModelLocked(providerId, credentials.connectionId, "web_search")
+    )
+      return null;
+    return credentials;
+  }
 
   for (const fallbackId of getSearchCredentialFallbacks(providerId)) {
     const fallbackCredentials = withoutKeyScopeBlocked(
@@ -107,6 +115,11 @@ async function resolveSearchCredentials(
       )
     );
     if (fallbackCredentials && !isAllRateLimitedCredentials(fallbackCredentials)) {
+      if (
+        providerId === "codex-search" &&
+        isModelLocked(providerId, fallbackCredentials.connectionId, "web_search")
+      )
+        return null;
       return fallbackCredentials;
     }
     if (fallbackCredentials) return fallbackCredentials;
@@ -301,7 +314,12 @@ async function postHandler(request: Request, context: unknown) {
             supportsSearchType(provider, body.search_type) &&
             !isProviderBlockedByIdOrAlias(provider.id, blockedProviders)
         )
-        .sort((a, b) => a.costPerQuery - b.costPerQuery);
+        // Preserve the base cost order except for Codex's subscription fallback.
+        .sort(
+          (a, b) =>
+            Number(b.id === "codex-search") - Number(a.id === "codex-search") ||
+            a.costPerQuery - b.costPerQuery
+        );
 
       for (const fallbackProvider of fallbackProviders) {
         providerConfig = fallbackProvider;
@@ -340,7 +358,10 @@ async function postHandler(request: Request, context: unknown) {
     // Exclude fallback-only providers; they are only used by the last-resort step.
     const otherIds = Object.values(SEARCH_PROVIDERS)
       .filter(
-        (provider) => !provider.fallbackOnly && supportsSearchType(provider, body.search_type)
+        (provider) =>
+          !provider.fallbackOnly &&
+          supportsSearchType(provider, body.search_type) &&
+          !isProviderBlockedByIdOrAlias(provider.id, blockedProviders)
       )
       .sort((a, b) => a.costPerQuery - b.costPerQuery)
       .map((p) => p.id)
@@ -363,8 +384,11 @@ async function postHandler(request: Request, context: unknown) {
     // failover so out-of-the-box search still works when no credentialed provider
     // is configured. Only used when no real alternate was found above.
     if (!alternateProviderId) {
-      for (const provider of Object.values(SEARCH_PROVIDERS)) {
+      for (const provider of Object.values(SEARCH_PROVIDERS).sort(
+        (a, b) => Number(b.id === "codex-search") - Number(a.id === "codex-search")
+      )) {
         if (!provider.fallbackOnly || provider.id === providerConfig.id) continue;
+        if (isProviderBlockedByIdOrAlias(provider.id, blockedProviders)) continue;
         if (isUnconfiguredLoopbackSearchProvider(provider)) continue;
         if (!supportsSearchType(provider, body.search_type)) continue;
         const fallbackCreds = await resolveSearchExecutionCredentials(provider, allowedConnections);

@@ -1,5 +1,6 @@
 import { getProviderCredentials } from "@/sse/services/auth";
 import { isCredentialDiagnosticSentinel } from "@/sse/services/credentialSentinel";
+import { isModelLocked } from "@omniroute/open-sse/services/accountFallback.ts";
 import { recordSearchUsageCost } from "@omniroute/open-sse/handlers/search/reportedCost.ts";
 import * as defaultLog from "@/sse/utils/logger";
 import {
@@ -64,10 +65,28 @@ export class WebSearchExecutionError extends Error {
 
 async function resolveSearchCredentials(providerId: string) {
   const creds = await getProviderCredentials(providerId).catch(() => null);
-  if (creds && !isCredentialDiagnosticSentinel(creds)) return creds;
+  if (creds && !isCredentialDiagnosticSentinel(creds)) {
+    if (
+      providerId === "codex-search" &&
+      "connectionId" in creds &&
+      typeof creds.connectionId === "string" &&
+      isModelLocked(providerId, creds.connectionId, "web_search")
+    )
+      return null;
+    return creds;
+  }
   for (const fallbackId of getSearchCredentialFallbacks(providerId)) {
     const fallback = await getProviderCredentials(fallbackId).catch(() => null);
-    if (fallback && !isCredentialDiagnosticSentinel(fallback)) return fallback;
+    if (fallback && !isCredentialDiagnosticSentinel(fallback)) {
+      if (
+        providerId === "codex-search" &&
+        "connectionId" in fallback &&
+        typeof fallback.connectionId === "string" &&
+        isModelLocked(providerId, fallback.connectionId, "web_search")
+      )
+        return null;
+      return fallback;
+    }
   }
   return null;
 }
@@ -209,7 +228,11 @@ export async function executeWebSearch(
       // still works when no credentialed provider is configured.
       const fallbackProviders = Object.values(SEARCH_PROVIDERS)
         .filter((provider) => provider.fallbackOnly && supportsSearchType(provider, searchType))
-        .sort((a, b) => a.costPerQuery - b.costPerQuery);
+        .sort(
+          (a, b) =>
+            Number(b.id === "codex-search") - Number(a.id === "codex-search") ||
+            a.costPerQuery - b.costPerQuery
+        );
 
       for (const fallbackProvider of fallbackProviders) {
         providerConfig = fallbackProvider;
