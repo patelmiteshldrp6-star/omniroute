@@ -192,17 +192,17 @@ JSON-RPC ਐਂਡਪੌਇੰਟ `/a2a` ਪ੍ਰਮਾਣਿਕ A2A ਪ੍ਰ�
 
 ---
 
-## ਨਵਾਂ ਹੁਨਰ ਸ਼ਾਮਲ ਕਰਨਾ
+## ਨਵੀਂ ਸਕਿੱਲ ਸ਼ਾਮਲ ਕਰਨਾ
 
-1. **ਹੁਨਰ ਫ਼ਾਈਲ ਬਣਾਓ:** `src/lib/a2a/skills/<your-skill>.ts`
+1. **ਸਕਿੱਲ ਫ਼ਾਈਲ ਬਣਾਓ:** `src/lib/a2a/skills/<your-skill>.ts`
 
-   ਇੱਕ async ਫੰਕਸ਼ਨ `(task: A2ATask) => Promise<{ artifacts, metadata }>` ਐਕਸਪੋਰਟ ਕਰੋ। `smartRouting.ts` ਵਰਗੇ ਮੌਜੂਦਾ ਹੁਨਰਾਂ ਦੀ ਬਣਤਰ ਦੀ ਪਾਲਣਾ ਕਰੋ।
+   ਇੱਕ async ਫੰਕਸ਼ਨ `(task: A2ATask) => Promise<{ artifacts, metadata }>` ਐਕਸਪੋਰਟ ਕਰੋ। `smartRouting.ts` ਵਰਗੀਆਂ ਮੌਜੂਦਾ ਸਕਿੱਲਾਂ ਦੀ ਬਣਤਰ ਦੀ ਪਾਲਣਾ ਕਰੋ।
 
 2. **ਹੈਂਡਲਰ ਰਜਿਸਟਰ ਕਰੋ:** `src/lib/a2a/taskExecution.ts` ਵਿੱਚ, `A2A_SKILL_HANDLERS` ਵਿੱਚ ਇੱਕ ਐਂਟਰੀ ਸ਼ਾਮਲ ਕਰੋ:
 
    ```typescript
    export const A2A_SKILL_HANDLERS = {
-     // ...ਮੌਜੂਦਾ ਹੁਨਰ
+     // ...ਮੌਜੂਦਾ ਸਕਿੱਲਾਂ
      "your-skill": async (task) => {
        const skillModule = await import("./skills/yourSkill");
        return skillModule.executeYourSkill(task);
@@ -210,7 +210,7 @@ JSON-RPC ਐਂਡਪੌਇੰਟ `/a2a` ਪ੍ਰਮਾਣਿਕ A2A ਪ੍ਰ�
    };
    ```
 
-3. **ਏਜੰਟ ਕਾਰਡ ਵਿੱਚ ਪ੍ਰਗਟ ਕਰੋ:** `src/app/.well-known/agent.json/route.ts` ਵਿੱਚ, `skills` ਐਰੇ ਵਿੱਚ ਜੋੜੋ:
+3. **ਏਜੰਟ ਕਾਰਡ ਵਿੱਚ ਉਪਲਬਧ ਕਰਵਾਓ:** `src/lib/a2a/agentCardMetadata.ts` ਵਿੱਚ (`/.well-known/agent.json` ਅਤੇ `/.well-known/agent-card.json` ਦੋਵਾਂ ਵੱਲੋਂ ਸਾਂਝੇ ਤੌਰ 'ਤੇ ਵਰਤੀ ਜਾਂਦੀ ਹੈ), `skills` ਐਰੇ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ:
 
    ```json
    {
@@ -222,9 +222,9 @@ JSON-RPC ਐਂਡਪੌਇੰਟ `/a2a` ਪ੍ਰਮਾਣਿਕ A2A ਪ੍ਰ�
    }
    ```
 
-4. **ਟੈਸਟ ਲਿਖੋ:** `tests/unit/a2a-<your-skill>.test.ts`। ਸਫਲਤਾ ਮਾਰਗ + ਤਰੁੱਟੀ ਮਾਰਗ ਨੂੰ ਕਵਰ ਕਰੋ।
+4. **ਟੈਸਟ ਲਿਖੋ:** `tests/unit/a2a-<your-skill>.test.ts`। ਸਫਲਤਾ ਵਾਲੇ ਪਾਥ ਅਤੇ ਗਲਤੀ ਵਾਲੇ ਪਾਥ ਦੋਵਾਂ ਨੂੰ ਕਵਰ ਕਰੋ।
 
-5. **ਇਸ ਫ਼ਾਈਲ ਦੀ `Available Skills` ਸਾਰਣੀ ਵਿੱਚ ਨਵੇਂ ਹੁਨਰ ਦਾ ਦਸਤਾਵੇਜ਼ੀਕਰਨ ਕਰੋ।**
+5. ਇਸ ਫ਼ਾਈਲ ਦੀ `Available Skills` ਟੇਬਲ ਵਿੱਚ ਨਵੀਂ ਸਕਿੱਲ ਦਾ **ਦਸਤਾਵੇਜ਼ੀਕਰਨ ਕਰੋ**।
 
 ---
 
@@ -261,7 +261,7 @@ JSON-RPC ਐਂਡਪੌਇੰਟ `/a2a` ਪ੍ਰਮਾਣਿਕ A2A ਪ੍ਰ�
 
 ---
 
-## ਏਕੀਕਰਨ ਦੀਆਂ ਉਦਾਹਰਨਾਂ
+## ਇੰਟੀਗ੍ਰੇਸ਼ਨ ਦੀਆਂ ਉਦਾਹਰਨਾਂ
 
 ### Python (requests)
 

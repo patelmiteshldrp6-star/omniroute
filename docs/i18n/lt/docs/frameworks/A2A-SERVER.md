@@ -201,7 +201,7 @@ JSON-RPC galinis taškas `/a2a` yra pagrindinis A2A įvesties taškas. Toliau pa
 
 1. **Sukurkite įgūdžio failą:** `src/lib/a2a/skills/<your-skill>.ts`
 
-   Eksportuokite asinchroninę funkciją `(task: A2ATask) => Promise<{ artifacts, metadata }>`. Vadovaukitės esamų įgūdžių, pvz., `smartRouting.ts`, struktūra.
+   Eksportuokite asinchroninę funkciją `(task: A2ATask) => Promise<{ artifacts, metadata }>`. Laikykitės esamų įgūdžių, pvz., `smartRouting.ts`, struktūros.
 
 2. **Užregistruokite apdorojimo funkciją:** faile `src/lib/a2a/taskExecution.ts` pridėkite įrašą į `A2A_SKILL_HANDLERS`:
 
@@ -215,21 +215,21 @@ JSON-RPC galinis taškas `/a2a` yra pagrindinis A2A įvesties taškas. Toliau pa
    };
    ```
 
-3. **Paskelbkite Agento kortelėje:** faile `src/app/.well-known/agent.json/route.ts` papildykite `skills` masyvą:
+3. **Pateikite Agento kortelėje:** faile `src/lib/a2a/agentCardMetadata.ts` (kurį bendrai naudoja `/.well-known/agent.json` ir `/.well-known/agent-card.json`) papildykite `skills` masyvą:
 
    ```json
    {
      "id": "your-skill",
-     "name": "Jūsų įgūdis",
-     "description": "Trumpas, į tikslą orientuotas aprašymas",
+     "name": "Your Skill",
+     "description": "Brief, intent-focused description",
      "tags": ["routing", "quota"],
-     "examples": ["Natūraliosios kalbos iškvietimo pavyzdys"]
+     "examples": ["Sample natural-language invocation"]
    }
    ```
 
-4. **Parašykite testus:** `tests/unit/a2a-<your-skill>.test.ts`. Apimkite sėkmingą scenarijų ir klaidos scenarijų.
+4. **Parašykite testus:** `tests/unit/a2a-<your-skill>.test.ts`. Patikrinkite sėkmingą scenarijų ir klaidos scenarijų.
 
-5. **Dokumentuokite** naują įgūdį šio failo lentelėje `Available Skills`.
+5. **Aprašykite** naują įgūdį šio failo lentelėje `Available Skills`.
 
 ---
 
@@ -268,7 +268,7 @@ pateikta → vykdoma → užbaigta
 
 ## Integravimo pavyzdžiai
 
-### Python (`requests`)
+### Python (requests)
 
 ```python
 import requests
@@ -287,7 +287,7 @@ print(result["artifacts"][0]["content"])
 print(result["metadata"]["routing_explanation"])
 ```
 
-### TypeScript (`fetch`)
+### TypeScript (fetch)
 
 ```typescript
 const resp = await fetch("http://localhost:20128/a2a", {

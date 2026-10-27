@@ -43,11 +43,11 @@ A2A በ**Endpoints → A2A** መቀያየሪያ የሚቆጣጠር ሲሆን በ
 
 ---
 
-## JSON-RPC 2.0 ስልቶች
+## JSON-RPC 2.0 ዘዴዎች
 
 ### `message/send` — የተመሳሰለ አፈጻጸም
 
-ወደ ክህሎት መልዕክት ይልካል እና ሙሉውን ምላሽ ይጠብቃል።
+መልዕክትን ወደ skill ይልካል እና ሙሉውን ምላሽ ይጠብቃል።
 
 ```bash
 curl -X POST http://localhost:20128/a2a \
@@ -65,9 +65,11 @@ curl -X POST http://localhost:20128/a2a \
   }'
 ```
 
-ለ`smart-routing`፣ `metadata.combo` ለጌትዌይ ጥያቄው የ`metadata.model` ግልጽ መሻሪያ ነው፤ ችላ እንደሚባል `x-combo` JSON መስክ ሳይሆን እንደ እውነተኛው `model` ይላካል። የጌትዌዩ መደበኛ የAPI ቁልፍ እና የየዒላማው ፈቃድ አሁንም ተፈጻሚ ነው። ልክ ያልሆነ ወይም ባዶ ጥምረት ውድቅ ይደረጋል።
+ለ`smart-routing`፣ `metadata.combo` ለጌትዌይ ጥያቄው የ`metadata.model` ግልጽ መሻሪያ ነው፤ ችላ እንደሚባል `x-combo` JSON መስክ ሳይሆን እንደ እውነተኛው `model` ይላካል። የጌትዌዩ መደበኛ የAPI ቁልፍ እና የእያንዳንዱ ዒላማ ፈቃድ አሰጣጥ አሁንም ተግባራዊ ይሆናል። ልክ ያልሆነ ወይም ባዶ combo ውድቅ ይደረጋል።
 
-ውጤቱ `requested_combo` (የጠሪው ዓላማ)፣ `dispatched_model` (ትክክለኛው የጌትዌይ ጥያቄ)፣ `response_model` (የጌትዌይ ምላሽ) እና `confirmed_combo` ያሳያል። ጌትዌዩ ጥምረትን በግልጽ ካልለየ በስተቀር የመጨረሻው መስክ `null` ይሆናል። የA2A ውሳኔ ምዝግቦች አፈጻጸሙን የሚያያይዙት ከተረጋገጠ ጥምረት ጋር ብቻ ሲሆን፣ ያልተረጋገጠ ጥያቄን እንደ `requestedCombo` ያቆያሉ።
+ውጤቱ `requested_combo` (የጠሪው ዓላማ)፣ `dispatched_model`
+(ትክክለኛው የጌትዌይ ጥያቄ)፣ `response_model` (የጌትዌይ ምላሽ) እና
+`confirmed_combo`ን ያሳያል። ጌትዌዩ comboን በግልጽ ካልለየ በስተቀር የመጨረሻው መስክ `null` ይሆናል። የA2A ውሳኔ ምዝግብ ማስታወሻዎች አፈጻጸሙን የሚያያይዙት ከተረጋገጠ combo ጋር ብቻ ሲሆን፣ ያልተረጋገጠውን ጥያቄ እንደ `requestedCombo` ያቆያሉ።
 
 **ምላሽ፦**
 
@@ -94,9 +96,9 @@ curl -X POST http://localhost:20128/a2a \
 }
 ```
 
-### `message/stream` — የSSE ዥረት
+### `message/stream` — SSE ዥረት
 
-ከ`message/send` ጋር ተመሳሳይ ነው፣ ነገር ግን ለቅጽበታዊ ዥረት በአገልጋይ የሚላኩ ክስተቶችን ይመልሳል።
+ከ`message/send` ጋር ተመሳሳይ ነው፣ ነገር ግን ለቅጽበታዊ ዥረት Server-Sent Eventsን ይመልሳል።
 
 ```bash
 curl -N -X POST http://localhost:20128/a2a \
@@ -194,9 +196,9 @@ OmniRoute 6 A2A ችሎታዎችን ያቀርባል፣ እነዚህም በ `src/l
 
 1. **የክህሎት ፋይል ይፍጠሩ፦** `src/lib/a2a/skills/<your-skill>.ts`
 
-   async function `(task: A2ATask) => Promise<{ artifacts, metadata }>` ወደ ውጭ ይላኩ። እንደ `smartRouting.ts` ያሉ ነባር ክህሎቶችን ቅርጽ ይከተሉ።
+   `(task: A2ATask) => Promise<{ artifacts, metadata }>` የሚል async ፈንክሽን export ያድርጉ። እንደ `smartRouting.ts` ያሉ ነባር ክህሎቶችን መዋቅር ይከተሉ።
 
-2. **መቆጣጠሪያውን ይመዝግቡ፦** በ`src/lib/a2a/taskExecution.ts` ውስጥ ወደ `A2A_SKILL_HANDLERS` ግቤት ያክሉ፦
+2. **ሃንድለሩን ይመዝግቡ፦** በ`src/lib/a2a/taskExecution.ts` ውስጥ፣ ወደ `A2A_SKILL_HANDLERS` አንድ ግቤት ያክሉ፦
 
    ```typescript
    export const A2A_SKILL_HANDLERS = {
@@ -208,19 +210,19 @@ OmniRoute 6 A2A ችሎታዎችን ያቀርባል፣ እነዚህም በ `src/l
    };
    ```
 
-3. **በወኪል ካርድ ላይ ያጋልጡ፦** በ`src/app/.well-known/agent.json/route.ts` ውስጥ ወደ `skills` ድርድር ያክሉ፦
+3. **በAgent Card ውስጥ ያጋልጡት፦** በ`src/lib/a2a/agentCardMetadata.ts` (`/.well-known/agent.json` እና `/.well-known/agent-card.json` በጋራ የሚጠቀሙበት) ውስጥ፣ ወደ `skills` ድርድር ያክሉ፦
 
    ```json
    {
      "id": "your-skill",
-     "name": "የእርስዎ ክህሎት",
-     "description": "አጭር፣ በዓላማ ላይ ያተኮረ መግለጫ",
+     "name": "Your Skill",
+     "description": "Brief, intent-focused description",
      "tags": ["routing", "quota"],
-     "examples": ["የተፈጥሮ ቋንቋ ጥሪ ምሳሌ"]
+     "examples": ["Sample natural-language invocation"]
    }
    ```
 
-4. **ሙከራዎችን ይጻፉ፦** `tests/unit/a2a-<your-skill>.test.ts`። የተሳካ መንገድን + የስህተት መንገድን ይሸፍኑ።
+4. **ሙከራዎችን ይጻፉ፦** `tests/unit/a2a-<your-skill>.test.ts`። የስኬት መንገዱን + የስህተት መንገዱን ይሸፍኑ።
 
 5. አዲሱን ክህሎት በዚህ ፋይል `Available Skills` ሰንጠረዥ ውስጥ **ይመዝግቡ**።
 

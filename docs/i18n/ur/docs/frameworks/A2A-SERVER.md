@@ -197,17 +197,17 @@ JSON-RPC اینڈ پوائنٹ `/a2a` مستند A2A نقطۂ داخلہ ہے۔ 
 
 ---
 
-## نئی مہارت شامل کرنا
+## نئی اسکل شامل کرنا
 
-1. **مہارت کی فائل بنائیں:** `src/lib/a2a/skills/<your-skill>.ts`
+1. **اسکل فائل بنائیں:** `src/lib/a2a/skills/<your-skill>.ts`
 
-   ایک async فنکشن `(task: A2ATask) => Promise<{ artifacts, metadata }>` ایکسپورٹ کریں۔ `smartRouting.ts` جیسی موجودہ مہارتوں کی ساخت پر عمل کریں۔
+   ایک async فنکشن `(task: A2ATask) => Promise<{ artifacts, metadata }>` ایکسپورٹ کریں۔ `smartRouting.ts` جیسی موجودہ اسکلز کی ساخت کی پیروی کریں۔
 
 2. **ہینڈلر رجسٹر کریں:** `src/lib/a2a/taskExecution.ts` میں، `A2A_SKILL_HANDLERS` میں ایک اندراج شامل کریں:
 
    ```typescript
    export const A2A_SKILL_HANDLERS = {
-     // ...موجودہ مہارتیں
+     // ...موجودہ اسکلز
      "your-skill": async (task) => {
        const skillModule = await import("./skills/yourSkill");
        return skillModule.executeYourSkill(task);
@@ -215,7 +215,7 @@ JSON-RPC اینڈ پوائنٹ `/a2a` مستند A2A نقطۂ داخلہ ہے۔ 
    };
    ```
 
-3. **ایجنٹ کارڈ میں ظاہر کریں:** `src/app/.well-known/agent.json/route.ts` میں، `skills` ارے میں شامل کریں:
+3. **ایجنٹ کارڈ میں ظاہر کریں:** `src/lib/a2a/agentCardMetadata.ts` میں (جسے `/.well-known/agent.json` اور `/.well-known/agent-card.json` مشترکہ طور پر استعمال کرتے ہیں)، `skills` ارے میں درج ذیل شامل کریں:
 
    ```json
    {
@@ -227,9 +227,9 @@ JSON-RPC اینڈ پوائنٹ `/a2a` مستند A2A نقطۂ داخلہ ہے۔ 
    }
    ```
 
-4. **ٹیسٹس لکھیں:** `tests/unit/a2a-<your-skill>.test.ts`۔ کامیاب راستے + خرابی کے راستے کا احاطہ کریں۔
+4. **ٹیسٹس لکھیں:** `tests/unit/a2a-<your-skill>.test.ts`۔ کامیابی کے راستے اور خرابی کے راستے، دونوں کا احاطہ کریں۔
 
-5. اس فائل کے `Available Skills` ٹیبل میں نئی مہارت کو **دستاویزی شکل دیں**۔
+5. **دستاویز میں شامل کریں:** اس فائل کے `Available Skills` ٹیبل میں نئی اسکل شامل کریں۔
 
 ---
 
@@ -266,7 +266,7 @@ JSON-RPC اینڈ پوائنٹ `/a2a` مستند A2A نقطۂ داخلہ ہے۔ 
 
 ---
 
-## انضمام کی مثالیں
+## انٹیگریشن کی مثالیں
 
 ### Python (requests)
 
