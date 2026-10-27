@@ -16,6 +16,8 @@ const proxyHealthV1Route = await import("../../src/app/api/v1/management/proxies
 const proxyBulkAssignV1Route =
   await import("../../src/app/api/v1/management/proxies/bulk-assign/route.ts");
 const proxyLogger = await import("../../src/lib/proxyLogger.ts");
+const settingsAssignmentsRoute =
+  await import("../../src/app/api/settings/proxies/assignments/route.ts");
 const settingsBulkAssignRoute =
   await import("../../src/app/api/settings/proxies/bulk-assign/route.ts");
 
