@@ -407,7 +407,7 @@ export function isInputBoundRequestFailure(error?: {
 }): boolean {
   const code = typeof error?.code === "string" ? error.code.toLowerCase() : "";
   const type = typeof error?.type === "string" ? error.type.toLowerCase() : "";
-  return INPUT_BOUND_ERROR_CODES.has(code) || type === "context_length_exceeded";
+  return INPUT_BOUND_ERROR_CODES.has(code) || INPUT_BOUND_ERROR_CODES.has(type);
 }
 
 /**

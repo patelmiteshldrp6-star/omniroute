@@ -41,6 +41,7 @@ test("#4519 combo guard: context-overflow and param-validation 400 texts are rec
 test("structured context overflow codes are recognized with generic or empty messages", () => {
   assert.equal(isContextOverflowFailure("Bad Request", { code: "context_window_exceeded" }), true);
   assert.equal(isContextOverflowFailure("", { type: "context_length_exceeded" }), true);
+  assert.equal(isContextOverflowFailure("Bad Request", { type: "context_window_exceeded" }), true);
 });
 
 test("token-rate-limit wording is not classified as context overflow", () => {
