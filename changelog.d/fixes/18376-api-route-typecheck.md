@@ -1,0 +1,1 @@
+- **fix(types):** cache-detection context and Gemini usage fallbacks stay within the API Route Typecheck contract ([#18376](https://github.com/diegosouzapw/OmniRoute/pull/18376)) — thanks @RaviTharuma
