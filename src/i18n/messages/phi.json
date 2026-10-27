@@ -2987,6 +2987,7 @@
       "grok-build": "xAI Grok Build TUI coding agent na may suporta sa custom provider",
       "droid": "AI Assistant ng Factory Droid",
       "openclaw": "Buksan ang Claw AI Assistant",
+      "openclaude": "CLI ng OpenClaude coding agent na may suporta sa provider na compatible sa OpenAI",
       "cline": "CLI ng Cline AI Coding Assistant",
       "kilo": "CLI ng Kilo Code AI Assistant",
       "qwen": "Qwen Code CLI",

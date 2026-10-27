@@ -2987,6 +2987,7 @@
       "grok-build": "ភ្នាក់ងារសរសេរកូដ xAI Grok Build TUI ដែលគាំទ្រអ្នកផ្តល់សេវាផ្ទាល់ខ្លួន",
       "droid": "ជំនួយការ AI Factory Droid",
       "openclaw": "ជំនួយការ AI Open Claw",
+      "openclaude": "CLI ភ្នាក់ងារសរសេរកូដ OpenClaude ដែលគាំទ្រអ្នកផ្តល់សេវាដែលត្រូវគ្នាជាមួយ OpenAI",
       "cline": "CLI ជំនួយការសរសេរកូដ AI Cline",
       "kilo": "CLI ជំនួយការ AI Kilo Code",
       "qwen": "Alibaba Qwen Code CLI",

@@ -2987,6 +2987,7 @@
       "grok-build": "xAI Grok Build TUI kódoló ágens egyéni szolgáltató támogatásával",
       "droid": "Gyári Droid AI-asszisztens",
       "openclaw": "Nyissa meg a Claw AI Assistant alkalmazást",
+      "openclaude": "OpenClaude kódoló ágens CLI OpenAI-kompatibilis szolgáltató támogatással",
       "cline": "Cline AI Coding Assistant CLI",
       "kilo": "Kilo Code AI Assistant CLI",
       "qwen": "Qwen Code CLI",

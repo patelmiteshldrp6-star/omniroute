@@ -2987,6 +2987,7 @@
       "grok-build": "Agen pengodean TUI xAI Grok Build dengan dukungan penyedia kustom",
       "droid": "Asisten AI Droid Pabrik",
       "openclaw": "Buka Asisten AI Claw",
+      "openclaude": "CLI agen pengodean OpenClaude dengan dukungan penyedia yang kompatibel dengan OpenAI",
       "cline": "CLI Asisten Pengkodean AI Cline",
       "kilo": "CLI Asisten AI Kode Kilo",
       "qwen": "CLI Qwen Code",

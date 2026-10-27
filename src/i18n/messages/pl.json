@@ -2987,6 +2987,7 @@
       "grok-build": "Agent programistyczny TUI xAI Grok Build z obsługą niestandardowych dostawców",
       "droid": "Asystent AI Factory Droid",
       "openclaw": "Asystent AI Open Claw",
+      "openclaude": "CLI agenta programistycznego OpenClaude z obsługą dostawcy zgodnego z OpenAI",
       "cline": "Cline — CLI asystenta programowania AI",
       "kilo": "Kilo Code — CLI asystenta AI",
       "qwen": "Qwen Code CLI",

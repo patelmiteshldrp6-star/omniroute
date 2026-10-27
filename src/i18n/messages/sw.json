@@ -2987,6 +2987,7 @@
       "grok-build": "Wakala wa uandishi wa kodi wa xAI Grok Build TUI mwenye usaidizi wa mtoa huduma maalum",
       "droid": "Msaidizi wa AI wa Factory Droid",
       "openclaw": "Msaidizi wa AI wa Open Claw",
+      "openclaude": "CLI ya wakala wa uandishi wa kodi OpenClaude yenye usaidizi wa mtoa huduma anayeoana na OpenAI",
       "cline": "CLI ya Msaidizi wa Uandishi wa Msimbo wa AI wa Cline",
       "kilo": "CLI ya Msaidizi wa AI wa Kilo Code",
       "qwen": "Qwen Code CLI",

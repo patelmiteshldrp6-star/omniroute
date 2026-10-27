@@ -2987,6 +2987,7 @@
       "grok-build": "Tác nhân lập trình xAI Grok Build TUI hỗ trợ nhà cung cấp tùy chỉnh",
       "droid": "Trợ lý AI Factory Droid",
       "openclaw": "Trợ lý AI Open Claw",
+      "openclaude": "CLI tác nhân lập trình OpenClaude hỗ trợ nhà cung cấp tương thích OpenAI",
       "cline": "CLI trợ lý lập trình Cline AI",
       "kilo": "CLI trợ lý AI Kilo Code",
       "qwen": "CLI Qwen Code của Alibaba",

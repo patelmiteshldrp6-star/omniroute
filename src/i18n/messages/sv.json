@@ -2987,6 +2987,7 @@
       "grok-build": "xAI Grok Build TUI-kodningsagent med stöd för anpassad leverantör",
       "droid": "Factory Droid AI-assistent",
       "openclaw": "Öppna Claw AI Assistant",
+      "openclaude": "OpenClaude CLI-kodningsagent med stöd för OpenAI-kompatibel leverantör",
       "cline": "Cline AI-kodningsassistent för CLI",
       "kilo": "Kilokod AI Assistant CLI",
       "qwen": "Qwen Code CLI",

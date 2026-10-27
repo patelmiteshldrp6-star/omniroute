@@ -2987,6 +2987,7 @@
       "grok-build": "カスタムプロバイダーをサポートするxAI Grok Build TUIコーディングエージェント",
       "droid": "ファクトリー ドロイド AI アシスタント",
       "openclaw": "オープンクロー AI アシスタント",
+      "openclaude": "OpenAI 互換プロバイダーに対応した OpenClaude コーディングエージェント CLI",
       "cline": "Cline AI コーディング アシスタント CLI",
       "kilo": "Kilo Code AI アシスタント CLI",
       "qwen": "Qwen Code CLI",

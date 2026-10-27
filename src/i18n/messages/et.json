@@ -2987,6 +2987,7 @@
       "grok-build": "xAI Grok Build TUI programmeerimisagent kohandatud teenusepakkuja toega",
       "droid": "Factory Droid AI-assistent",
       "openclaw": "Open Claw AI-assistent",
+      "openclaude": "OpenClaude programmeerimisagendi CLI OpenAI-ühilduva teenusepakkuja toega",
       "cline": "Cline AI programmeerimisassistendi CLI",
       "kilo": "Kilo Code AI-assistendi CLI",
       "qwen": "Alibaba Qwen Code CLI",

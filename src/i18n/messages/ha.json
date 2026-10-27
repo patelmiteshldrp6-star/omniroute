@@ -2987,6 +2987,7 @@
       "grok-build": "Wakilin shirye-shirye na xAI Grok Build TUI tare da goyon bayan mai samarwa na musamman",
       "droid": "Mataimakin AI na Factory Droid",
       "openclaw": "Mataimakin AI na Open Claw",
+      "openclaude": "CLI na wakilin shirye-shirye OpenClaude tare da tallafin mai bada sabis mai dacewa da OpenAI",
       "cline": "CLI na mataimakin rubuta lamba na Cline AI",
       "kilo": "CLI na mataimakin AI na Kilo Code",
       "qwen": "CLI na Alibaba Qwen Code",

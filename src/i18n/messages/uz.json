@@ -2987,6 +2987,7 @@
       "grok-build": "Maxsus provayderlarni qo‘llab-quvvatlaydigan xAI Grok Build TUI dasturlash agenti",
       "droid": "Factory Droid AI yordamchisi",
       "openclaw": "Open Claw AI yordamchisi",
+      "openclaude": "OpenAI bilan mos provayder qo'llab-quvvatlanadigan OpenClaude dasturlash agenti CLI",
       "cline": "Cline AI dasturlash yordamchisi CLI",
       "kilo": "Kilo Code AI yordamchisi CLI",
       "qwen": "Alibaba Qwen Code CLI",

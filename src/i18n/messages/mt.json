@@ -2987,6 +2987,7 @@
       "grok-build": "Aġent tal-kodifikazzjoni xAI Grok Build TUI b’appoġġ għal fornitur personalizzat",
       "droid": "Assistent tal-IA Factory Droid",
       "openclaw": "Assistent tal-IA Open Claw",
+      "openclaude": "CLI tal-aġent tal-kodifikazzjoni OpenClaude b'appoġġ għal fornitur kompatibbli ma' OpenAI",
       "cline": "Cline AI Coding Assistant CLI",
       "kilo": "Kilo Code AI Assistant CLI",
       "qwen": "Alibaba Qwen Code CLI",

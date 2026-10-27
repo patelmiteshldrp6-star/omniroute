@@ -2987,6 +2987,7 @@
       "grok-build": "xAI Grok Build TUI, programski agent s podporo za ponudnike po meri",
       "droid": "Factory Droid, pomočnik z umetno inteligenco",
       "openclaw": "Open Claw, pomočnik z umetno inteligenco",
+      "openclaude": "CLI programskega agenta OpenClaude s podporo za ponudnika, združljivega z OpenAI",
       "cline": "Cline CLI, pomočnik za programiranje z umetno inteligenco",
       "kilo": "Kilo Code CLI, pomočnik z umetno inteligenco",
       "qwen": "Alibaba Qwen Code CLI",

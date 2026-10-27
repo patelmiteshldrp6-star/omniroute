@@ -2987,6 +2987,7 @@
       "grok-build": "Agent de codage TUI xAI Grok Build avec prise en charge de fournisseur personnalisé",
       "droid": "Assistant IA pour droïdes d'usine",
       "openclaw": "Assistant IA Open Claw",
+      "openclaude": "CLI de l'agent de codage OpenClaude avec prise en charge d'un fournisseur compatible OpenAI",
       "cline": "CLI de l'assistant de codage Cline AI",
       "kilo": "CLI de l'assistant IA Kilo Code",
       "qwen": "CLI Qwen Code",

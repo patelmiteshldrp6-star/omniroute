@@ -2987,6 +2987,7 @@
       "grok-build": "TUI-агент для кодування xAI Grok Build із підтримкою користувацьких провайдерів",
       "droid": "ШІ-помічник Factory Droid",
       "openclaw": "ШІ-помічник Open Claw",
+      "openclaude": "CLI агента для кодування OpenClaude з підтримкою OpenAI-сумісного провайдера",
       "cline": "CLI ШІ-помічника для програмування Cline",
       "kilo": "Кіло Код AI Assistant CLI",
       "qwen": "CLI Qwen Code",

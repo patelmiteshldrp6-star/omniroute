@@ -2987,6 +2987,7 @@
       "grok-build": "Πράκτορας προγραμματισμού TUI xAI Grok Build με υποστήριξη προσαρμοσμένου παρόχου",
       "droid": "Βοηθός ΤΝ Factory Droid",
       "openclaw": "Βοηθός ΤΝ Open Claw",
+      "openclaude": "CLI πράκτορα προγραμματισμού OpenClaude με υποστήριξη παρόχου συμβατού με OpenAI",
       "cline": "Βοηθός προγραμματισμού ΤΝ Cline για CLI",
       "kilo": "Βοηθός ΤΝ Kilo Code για CLI",
       "qwen": "Alibaba Qwen Code CLI",

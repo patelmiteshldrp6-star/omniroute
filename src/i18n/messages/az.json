@@ -2987,6 +2987,7 @@
       "grok-build": "Fərdi provayder dəstəyi olan xAI Grok Build TUI kodlaşdırma agenti",
       "droid": "Factory Droid süni intellekt köməkçisi",
       "openclaw": "Open Claw süni intellekt köməkçisi",
+      "openclaude": "OpenAI ilə uyğun provayder dəstəyi olan OpenClaude kodlaşdırma agenti CLI",
       "cline": "Cline süni intellekt kodlaşdırma köməkçisi CLI",
       "kilo": "Kilo Code AI köməkçisi CLI",
       "qwen": "Qwen Code CLI",

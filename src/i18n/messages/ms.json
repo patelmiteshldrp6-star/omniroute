@@ -2987,6 +2987,7 @@
       "grok-build": "Ejen pengekodan TUI xAI Grok Build dengan sokongan penyedia tersuai",
       "droid": "Pembantu AI Droid Kilang",
       "openclaw": "Buka Pembantu AI Claw",
+      "openclaude": "CLI ejen pengekodan OpenClaude dengan sokongan penyedia yang serasi dengan OpenAI",
       "cline": "Pembantu Pengekodan AI Cline CLI",
       "kilo": "CLI Pembantu AI Kilo Code",
       "qwen": "Qwen Code CLI",

@@ -2987,6 +2987,7 @@
       "grok-build": "कस्टम प्रदायक समर्थनसहितको xAI Grok Build TUI कोडिङ एजेन्ट",
       "droid": "Factory Droid AI सहायक",
       "openclaw": "Open Claw AI सहायक",
+      "openclaude": "OpenAI-अनुकूल प्रदायक समर्थनसहितको OpenClaude कोडिङ एजेन्ट CLI",
       "cline": "Cline AI कोडिङ सहायक CLI",
       "kilo": "Kilo Code AI सहायक CLI",
       "qwen": "Alibaba Qwen Code CLI",

@@ -2987,6 +2987,7 @@
       "grok-build": "عميل برمجة TUI من xAI Grok مع دعم موفر مخصص",
       "droid": "مساعد Factory Droid AI",
       "openclaw": "Openمساعد Claw AI",
+      "openclaude": "واجهة سطر أوامر لعميل البرمجة OpenClaude مع دعم موفّر متوافق مع OpenAI",
       "cline": "مساعد Cline للبرمجة بالذكاء الاصطناعي عبر سطر الأوامر",
       "kilo": "كيلو كود AI مساعد CLI",
       "qwen": "واجهة خط أوامر Qwen Code CLI",

@@ -2987,6 +2987,7 @@
       "grok-build": "Özel sağlayıcı desteğine sahip xAI Grok Build TUI kodlama aracısı",
       "droid": "Factory Droid AI Asistanı",
       "openclaw": "Open Claw AI Asistanı",
+      "openclaude": "OpenAI uyumlu sağlayıcı desteğine sahip OpenClaude kodlama aracısı CLI",
       "cline": "Cline AI Kodlama Asistanı CLI",
       "kilo": "Kilo Code AI Asistanı CLI",
       "qwen": "Qwen Code CLI",

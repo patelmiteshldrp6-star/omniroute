@@ -2987,6 +2987,7 @@
       "grok-build": "支持自定义提供者的 xAI Grok Build TUI 编码智能体",
       "droid": "Factory Droid AI 助手",
       "openclaw": "OpenClaw AI 助手",
+      "openclaude": "支持 OpenAI 兼容提供者的 OpenClaude 编程智能体 CLI",
       "cline": "Cline AI 编码助手 CLI",
       "kilo": "Kilo Code AI 助手 CLI",
       "qwen": "Qwen Code CLI",

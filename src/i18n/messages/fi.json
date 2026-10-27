@@ -2987,6 +2987,7 @@
       "grok-build": "xAI Grok Build TUI -koodausagentti mukautetun palveluntarjoajan tuella",
       "droid": "Tehdas Droid AI Assistant",
       "openclaw": "Avaa Claw AI Assistant",
+      "openclaude": "OpenClaude-koodausagentin CLI OpenAI-yhteensopivan palveluntarjoajan tuella",
       "cline": "Cline-tekoälykoodausavustajan CLI",
       "kilo": "Kilo Code -tekoälyavustajan CLI",
       "qwen": "Qwen Code CLI",

@@ -2987,6 +2987,7 @@
       "grok-build": "סוכן תכנות TUI של xAI Grok Build עם תמיכה בספק מותאם אישית",
       "droid": "מפעל Droid AI Assistant",
       "openclaw": "פתח את Claw AI Assistant",
+      "openclaude": "CLI של סוכן התכנות OpenClaude עם תמיכה בספק תואם OpenAI",
       "cline": "Cline CLI — מסייע קידוד מבוסס AI",
       "kilo": "קילו קוד AI עוזר CLI",
       "qwen": "Qwen Code CLI",

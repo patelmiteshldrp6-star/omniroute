@@ -2987,6 +2987,7 @@
       "grok-build": "xAI Grok Build TUI, onye nnọchi anya ide koodu nwere nkwado maka onye na-eweta ọrụ ahaziri iche",
       "droid": "Factory Droid Onye enyemaka AI",
       "openclaw": "Open Claw Onye enyemaka AI",
+      "openclaude": "CLI onye nnọchi anya ide koodu OpenClaude nwere nkwado onye na-enye ọrụ dakọtara na OpenAI",
       "cline": "Cline CLI onye enyemaka AI maka ide koodu",
       "kilo": "Kilo Code CLI onye enyemaka AI",
       "qwen": "Alibaba Qwen Code CLI",

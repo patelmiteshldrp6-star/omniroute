@@ -2987,6 +2987,7 @@
       "grok-build": "Aṣojú ìkọ́ kóòdù xAI Grok Build TUI pẹ̀lú àtìlẹ́yìn olùpèsè àdáni",
       "droid": "Olùrànlọ́wọ́ AI Factory Droid",
       "openclaw": "Olùrànlọ́wọ́ AI Open Claw",
+      "openclaude": "CLI aṣojú ìkọ́ kóòdù OpenClaude pẹ̀lú àtìlẹ́yìn olùpèsè tó bá OpenAI mu",
       "cline": "CLI Olùrànlọ́wọ́ Ìkọ́ Kóòdù AI Cline",
       "kilo": "CLI Olùrànlọ́wọ́ AI Kilo Code",
       "qwen": "Alibaba Qwen Code CLI",

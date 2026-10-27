@@ -2987,6 +2987,7 @@
       "grok-build": "عامل کدنویسی TUI برای xAI Grok Build با پشتیبانی از ارائه‌دهنده سفارشی",
       "droid": "دستیار هوش مصنوعی Factory Droid",
       "openclaw": "دستیار هوش مصنوعی Open Claw",
+      "openclaude": "CLI عامل کدنویسی OpenClaude با پشتیبانی از ارائه‌دهنده سازگار با OpenAI",
       "cline": "رابط خط فرمان دستیار کدنویسی هوش مصنوعی Cline",
       "kilo": "رابط خط فرمان دستیار هوش مصنوعی Kilo Code",
       "qwen": "Qwen Code CLI",

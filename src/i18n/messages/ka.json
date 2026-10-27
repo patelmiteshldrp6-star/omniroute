@@ -2987,6 +2987,7 @@
       "grok-build": "xAI Grok Build TUI კოდირების აგენტი ინდივიდუალური პროვაიდერების მხარდაჭერით",
       "droid": "Factory Droid AI ასისტენტი",
       "openclaw": "Open Claw AI ასისტენტი",
+      "openclaude": "OpenClaude კოდირების აგენტის CLI OpenAI-თან თავსებადი პროვაიდერის მხარდაჭერით",
       "cline": "Cline AI კოდირების ასისტენტის CLI",
       "kilo": "Kilo Code AI ასისტენტის CLI",
       "qwen": "Alibaba Qwen Code CLI",

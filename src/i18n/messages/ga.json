@@ -2987,6 +2987,7 @@
       "grok-build": "Gníomhaire códaithe TUI xAI Grok Build le tacaíocht do sholáthraithe saincheaptha",
       "droid": "Cúntóir AI Factory Droid",
       "openclaw": "Cúntóir AI Open Claw",
+      "openclaude": "CLI ghníomhaire códaithe OpenClaude le tacaíocht do sholáthraí atá comhoiriúnach le OpenAI",
       "cline": "CLI cúntóra códaithe AI Cline",
       "kilo": "CLI cúntóra AI Kilo Code",
       "qwen": "Alibaba Qwen Code CLI",
