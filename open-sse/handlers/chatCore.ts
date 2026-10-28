@@ -122,6 +122,7 @@ import {
   stripIncompatibleMessageContent,
 } from "../services/modelStrip.ts";
 import { echoModelInObject } from "../services/responseModelEcho.ts";
+import { resolveConnectionMappedModel } from "../services/connectionModelMap.ts";
 import { getUnsupportedParams, REGISTRY } from "../config/providerRegistry.ts";
 
 import { checkToolCallingRequiredButUnsupported } from "./chatCore/toolCallingRequiredCheck.ts";
@@ -690,6 +691,20 @@ async function handleChatCoreInner({
   );
   if (routedLifecycleError) return routedLifecycleError;
 
+  // Connection-level model mapping (sub2api port): if the selected connection has a modelMap,
+  // rewrite effectiveModel accordingly.
+  const connectionModelMap = (credentials as { modelMap?: Record<string, string> } | null | undefined)?.modelMap;
+  if (connectionModelMap) {
+    const mappedModel = resolveConnectionMappedModel(effectiveModel, connectionModelMap);
+    if (mappedModel !== effectiveModel) {
+      log?.info?.("MODEL_MAP", `Connection model mapping applied: ${effectiveModel} -> ${mappedModel}`);
+      effectiveModel = mappedModel;
+      if (body && typeof body === "object" && !Array.isArray(body)) {
+        (body as Record<string, unknown>).model = mappedModel;
+      }
+    }
+  }
+
   // Effort-variant model ids: the Claude / Claude-Code model picker (e.g. VS Code's
   // "Effort" slider) advertises claude-...-{low,medium,high,xhigh,max}. Anthropic has
   // no such model, so the suffixed id 404s upstream. Strip it back to the real base id
@@ -917,6 +932,7 @@ async function handleChatCoreInner({
       provider,
       connectionId,
       model,
+      actualModel: currentModel || effectiveModel || model,
       skillRequestId,
       detailedLoggingEnabled,
       reqLogger,
@@ -3246,6 +3262,7 @@ async function handleChatCoreInner({
       memoryOwnerId,
       memorySettings,
       model,
+      requestedModel,
       normalizeHeaders,
       normalizeUsage,
       onRequestSuccess,
@@ -3364,6 +3381,7 @@ async function handleChatCoreInner({
     memoryOwnerId,
     memorySettings,
     model,
+    requestedModel,
     onRequestSuccess,
     onStreamFailure,
     pendingConnId,
