@@ -18,7 +18,6 @@ import {
   isModelCapacityOverloadError,
 } from "@/shared/utils/circuitBreaker";
 import {
-  CONTEXT_OVERFLOW_PATTERNS,
   isContextOverflowText,
   isTokenRateLimitWording,
   PARAM_VALIDATION_PATTERNS,
