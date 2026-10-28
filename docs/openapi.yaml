@@ -11588,6 +11588,123 @@ paths:
       responses:
         "200":
           description: OK
+  /api/oauth/{provider}/import-export:
+    post:
+      tags:
+        - Oauth
+      summary: Import OAuth accounts from a third-party account-manager export
+      description: >
+        Bulk-imports OAuth accounts from a plaintext account-manager export (for example
+        Antigravity Manager's cloud-accounts export). The body is the export document itself:
+        `{ "accounts": [...] }`, a bare array, or a single record, with at most 100 accounts and
+        at most 5 MiB. Tokens may live under a nested `token` object or flat on the record, in
+        snake_case or camelCase. Each record is refreshed and finalized through the same path as
+        `paste-credentials`, only an upstream-verified account email takes part in de-duplication,
+        and re-importing refreshes an existing connection in place. Supported providers are those
+        accepted by `paste-credentials` (`antigravity`, `agy`). Requires management authentication.
+      security:
+        - BearerAuth: []
+        - ManagementSessionAuth: []
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - antigravity
+              - agy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  properties:
+                    accounts:
+                      type: array
+                      maxItems: 100
+                      items:
+                        type: object
+                        additionalProperties: true
+                - type: array
+                  maxItems: 100
+                  items:
+                    type: object
+                    additionalProperties: true
+                - type: object
+                  additionalProperties: true
+      responses:
+        "200":
+          description: Per-record import summary (also returned when some or all records failed)
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - imported
+                  - failed
+                  - total
+                  - results
+                properties:
+                  success:
+                    type: boolean
+                    description: True only when no record failed.
+                  imported:
+                    type: integer
+                  failed:
+                    type: integer
+                  total:
+                    type: integer
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - index
+                        - ok
+                      properties:
+                        index:
+                          type: integer
+                        email:
+                          type: string
+                        ok:
+                          type: boolean
+                        connectionId:
+                          type: string
+                        connectionEmail:
+                          type: string
+                        error:
+                          type: string
+        "400":
+          description: Unsupported provider, invalid or empty JSON body, or no accounts in the payload
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        "401":
+          description: Missing or invalid management credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        "413":
+          description: Account export exceeds the 5 MiB request body limit
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
   /api/oauth/cliproxy-import:
     get:
       tags:
