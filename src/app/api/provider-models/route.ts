@@ -17,6 +17,7 @@ import {
   getHiddenModelsByProvider,
   type ModelCompatPatch,
 } from "@/lib/db/models";
+import { clearModelCompatOverrides } from "@/lib/db/models/compat";
 import {
   getModelContextOverrideRecord,
   setModelContextOverride,
@@ -535,6 +536,7 @@ export async function DELETE(request) {
     const all = searchParams.get("all");
     if (all === "true") {
       await replaceCustomModels(provider, [], { allowEmpty: true });
+      clearModelCompatOverrides(provider);
       const syncedAvailableModelListsRemoved =
         await deleteSyncedAvailableModelsForProvider(provider);
       const removedAliases = await deleteManagedAvailableModelAliasesForProvider(provider);
