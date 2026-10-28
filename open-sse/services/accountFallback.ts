@@ -322,8 +322,6 @@ export const CONTEXT_OVERFLOW_PATTERNS = [
   /\bmax.*token/i,
   /\btoken limit/i,
   /\brequest too large\b/i,
-  /\btokens per minute\b/i,
-  /\btpm\b/i,
 ];
 
 // Structured error codes that reliably indicate model access denied

@@ -46,6 +46,9 @@ test("structured context overflow codes are recognized with generic or empty mes
 
 test("token-rate-limit wording is not classified as context overflow", () => {
   assert.equal(isContextOverflow400("input exceeds maximum input tokens per minute"), false);
+  assert.equal(isContextOverflow400("Rate limit reached for tokens per minute"), false);
+  assert.equal(isContextOverflow400("TPM limit exceeded"), false);
+  assert.equal(isContextOverflow400("RPM quota exceeded for this key"), false);
 });
 
 test("#4519 combo guard: a genuinely body-specific 400 is NOT classified as overflow/param", () => {

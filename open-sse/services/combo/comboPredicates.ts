@@ -801,7 +801,15 @@ export async function resolvePersistedConnectionCooldownSkipReason(
 export function isContextOverflow400(errorText: string | null | undefined): boolean {
   const text = String(errorText || "");
   if (!text) return false;
-  if (/maximum input tokens?\s+per\s+(?:minute|second|hour|day)\b/i.test(text)) return false;
+  // Rate-limit TPM/RPM wording must never be mistaken for context overflow.
+  if (
+    /maximum input tokens?\s+per\s+(?:minute|second|hour|day)\b/i.test(text) ||
+    /\btokens?\s+per\s+(?:minute|second|hour|day)\b/i.test(text) ||
+    /\btpm\b/i.test(text) ||
+    /\brpm\b/i.test(text)
+  ) {
+    return false;
+  }
   return (
     /\bcontext.*(?:length_exceeded|too long|overflow|exceeded|window|limit)\b/i.test(text) ||
     /exceeds.*context/i.test(text) ||
