@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 import {
+  captureCodexConnectionFence,
+  runWithCodexConnectionFence,
+  isCodexConnectionFenceCurrent,
+} from "@/lib/db/codexConnectionFences";
+import {
   getProviderConnectionFamilyIds,
   isClaudeCodeCompatibleProvider,
   isAnthropicCompatibleProvider,
@@ -220,6 +225,7 @@ export async function GET(
     if (staleEncryptionResponse) return staleEncryptionResponse;
 
     const provider = connectionProvider;
+    const codexFence = provider === "codex" ? captureCodexConnectionFence(connection, id) : null;
     if (!provider) {
       return NextResponse.json({ error: "Invalid connection provider" }, { status: 400 });
     }
@@ -2175,7 +2181,9 @@ export async function GET(
           cachedDiscoveryModels.every((model, index) => model.id === models[index]?.id)
         )
           return;
-        await persistDiscoveredModels(provider, connectionId, models);
+        await runWithCodexConnectionFence(codexFence, () =>
+          persistDiscoveredModels(provider, connectionId, models)
+        );
       };
 
       if (!refresh && cachedDiscoveryModels.length > 0) {
@@ -2215,6 +2223,12 @@ export async function GET(
       const githubCatalogDiscovery = await fetchCodexGithubCatalogModels({
         fetchImpl: createCodexDiscoveryFetch(proxy, "public-only"),
       });
+      if (codexFence && !isCodexConnectionFenceCurrent(codexFence)) {
+        return errorResponse(
+          409,
+          "Codex connection changed during model discovery; retry with current credentials."
+        );
+      }
       const liveModels = liveDiscovery.models;
       const githubCatalogModels = githubCatalogDiscovery.models;
       if (liveModels && liveModels.length > 0) {
@@ -2223,7 +2237,9 @@ export async function GET(
             ? enrichCodexModelsFromGithubCatalog(liveModels, githubCatalogModels)
             : liveModels;
         const catalog = reconcileCodexCatalog(enrichedLiveModels);
-        await persistDiscoveredModels(provider, connectionId, catalog.activeModels);
+        await runWithCodexConnectionFence(codexFence, () =>
+          persistDiscoveredModels(provider, connectionId, catalog.activeModels)
+        );
         const clientVersionSource = getCodexClientVersionSource();
         return buildResponse({
           provider,

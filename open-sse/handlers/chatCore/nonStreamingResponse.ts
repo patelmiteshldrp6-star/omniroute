@@ -60,6 +60,10 @@ import { finalizeToolLoopError } from "../chatCore/nonStreamingFinalization.ts";
 import { markCodexScopeRateLimited } from "../chatCore/codexFailover.ts";
 import { deleteSessionAccountAffinity } from "@/lib/db/sessionAccountAffinity";
 import { writeTerminalStatus } from "@/shared/utils/terminalStatus";
+import {
+  runWithCodexResponseFence,
+  inheritCodexResponseFence,
+} from "@/lib/db/codexConnectionFences";
 import { MEMORY_BUILTIN_TOOL_NAMES } from "@/lib/skills/memoryBuiltins";
 
 import { storeSemanticCacheResponse } from "../chatCore/semanticCacheStore.ts";
@@ -386,14 +390,16 @@ export async function runNonStreamingResponse(deps: NonStreamingDeps) {
       const errHeaders = err?.upstreamHeaders || err?.response?.headers;
       const errUpstreamBody = err?.upstreamErrorBody;
       if (err) {
-        await applyProviderFailureClassification({
-          statusCode: err.status,
-          message: errMessage,
-          headers: errHeaders,
-          upstreamErrorBody: errUpstreamBody,
-          retryAfterMs: err.retryAfterMs ?? null,
-          targetModel: currentModel,
-        });
+        await runWithCodexResponseFence(err.response, () =>
+          applyProviderFailureClassification({
+            statusCode: err.status,
+            message: errMessage,
+            headers: errHeaders,
+            upstreamErrorBody: errUpstreamBody,
+            retryAfterMs: err.retryAfterMs ?? null,
+            targetModel: currentModel,
+          })
+        );
       }
 
       const captured = providerRequestCapture.latest?.() ?? null;
@@ -664,7 +670,7 @@ export async function runNonStreamingResponse(deps: NonStreamingDeps) {
     );
     effectiveServiceTier = resolveReportedServiceTier(responseBody) ?? effectiveServiceTier;
     if (onRequestSuccess) {
-      await onRequestSuccess();
+      await runWithCodexResponseFence(providerResponse, () => onRequestSuccess(), true);
     }
     const successConnectionId = getCurrentConnectionId();
     await maybeSyncClaudeExtraUsageState({
@@ -1111,13 +1117,16 @@ export async function runNonStreamingResponse(deps: NonStreamingDeps) {
     return {
       response: {
         success: true,
-        response: inheritEmptyTurnPolicy(
+        response: inheritCodexResponseFence(
           providerResponse,
-          maybeWrapForcedNonStreamingResponsesJson({
-            clientRequestedResponsesStream,
-            body: translatedResponse,
-            headers: responseHeaders,
-          })
+          inheritEmptyTurnPolicy(
+            providerResponse,
+            maybeWrapForcedNonStreamingResponsesJson({
+              clientRequestedResponsesStream,
+              body: translatedResponse,
+              headers: responseHeaders,
+            })
+          )
         ),
       },
       carry: {
