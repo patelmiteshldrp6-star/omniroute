@@ -4,6 +4,7 @@ import { Button, Card, Input } from "@/shared/components";
 import type { ProviderDisplayMode } from "../providerPageStorage";
 import { CategoryDot } from "./CategoryDot";
 import ProviderDisplayModeControl from "./ProviderDisplayModeControl";
+import NewModelsButton from "./NewModelsButton";
 
 type ProviderMessageTranslator = ((key: string, values?: Record<string, unknown>) => string) & {
   has?: (key: string) => boolean;
@@ -222,6 +223,7 @@ export default function ProviderSummaryCard({
           <Button size="sm" variant="secondary" icon="upload_file" onClick={onImportFromFile}>
             {providerText(t, "importFromFile", "Import from file")}
           </Button>
+          <NewModelsButton />
           <Button
             size="sm"
             variant="outline"
