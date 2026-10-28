@@ -13,6 +13,7 @@ const { remainderIsHomogeneous, shouldAbortOnInputBoundFailure } =
   await import("../../open-sse/services/combo/executeTargetClassify.ts");
 const { hasIdenticalModelErrorStreak } =
   await import("../../open-sse/services/combo/comboPredicates.ts");
+const { handleComboChat } = await import("../../open-sse/services/combo.ts");
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const noop = () => {};
 test.after(() => fs.rmSync(dir, { recursive: true, force: true }));
@@ -117,7 +118,6 @@ test("duplicate conflicts are not malformed request evidence", () => {
     true
   );
 });
-const { handleComboChat } = await import("../../open-sse/services/combo.ts");
 const log = { info: noop, warn: noop, error: noop, debug: noop };
 const overflow = () =>
   new Response(
