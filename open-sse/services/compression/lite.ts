@@ -146,10 +146,30 @@ function backOffToWordBoundary(content: string, cutIndex: number): number {
   return cutIndex;
 }
 
-/** Truncate a tool result string to the Lite cap on a word boundary. */
+const TRUNCATION_MARKER = "\n...[truncated]";
+// Room for the middle marker, whatever its line count.
+const ELISION_RESERVE = 32;
+const TAIL_SHARE = 0.3;
+
+/**
+ * Truncate a tool result string to the Lite cap. Multi-line content keeps its tail as well as its
+ * head: a head-only cut deletes the lines an agent is about to edit (anchors, grep hits at the
+ * bottom), so the model rebuilds them from memory and the edit it makes is rejected as stale.
+ * Single-line content still gets the #8169 word-boundary cut.
+ */
 function truncateToolText(text: string, maxLength: number): string {
+  const budgetLength = maxLength - TRUNCATION_MARKER.length - ELISION_RESERVE;
+  if (budgetLength > 0 && text.split("\n").length > 10) {
+    const headCut = backOffToWordBoundary(text, Math.ceil(budgetLength * (1 - TAIL_SHARE)));
+    const tailStart = text.lastIndexOf("\n", text.length - (budgetLength - headCut)) + 1;
+    if (tailStart > headCut) {
+      const elided = text.slice(headCut, tailStart).split("\n").length;
+      const tail = text.slice(tailStart);
+      return `${text.slice(0, headCut)}\n... [${elided} lines elided] ...\n${tail}${TRUNCATION_MARKER}`;
+    }
+  }
   const cutIndex = backOffToWordBoundary(text, maxLength);
-  return text.slice(0, cutIndex) + "\n...[truncated]";
+  return text.slice(0, cutIndex) + TRUNCATION_MARKER;
 }
 
 /**

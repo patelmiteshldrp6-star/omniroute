@@ -115,6 +115,22 @@ describe("compressToolResults", () => {
     assert.equal(result.applied, false);
     assert.equal(result.body.messages![0].content, "x".repeat(1500));
   });
+  // A head-only cut deletes the lines an agent is about to edit, so it rebuilds the anchor from
+  // memory and the edit is rejected as stale.
+  it("keeps the tail of a long line-addressed tool result so its anchors survive", () => {
+    const lines = Array.from(
+      { length: 95 },
+      (_, i) => `${i + 1}:ab|export function getQueue${i + 1}(wid: string): QueuedMutation[] {`
+    );
+    const body = { messages: [{ role: "tool", content: lines.join("\n") }] };
+    const result = compressToolResults(body);
+    assert.equal(result.applied, true);
+    const content = result.body.messages![0].content as string;
+    assert.ok(content.includes(`${lines[0]}`), "first line must survive the cut");
+    assert.ok(content.includes(`${lines[94]}`), "last line must survive the cut");
+    assert.match(content, /\.\.\. \[\d+ lines elided\] \.\.\./);
+    assert.ok(content.length < lines.join("\n").length);
+  });
 
   it("reads OMNIROUTE_LITE_MAX_TOOL_LENGTH when no option is passed", () => {
     const previous = process.env.OMNIROUTE_LITE_MAX_TOOL_LENGTH;
