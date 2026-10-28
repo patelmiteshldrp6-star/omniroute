@@ -22,8 +22,15 @@
  *
  * Notes:
  *   - The playground's system prompt is server-side (set via setConfig by the
- *     app itself); client `system` messages are dropped. Tool calls are not
- *     implemented (v1) — text-only chat.
+ *     app itself); client `system` messages are dropped. Tool calls are emulated
+ *     by serializing OpenAI `tools[]` into a prompt contract (sent as its own
+ *     user message) and parsing the model's text reply back into OpenAI
+ *     `tool_calls`.
+ *   - A conversation may carry at most 10 user-role messages; longer payloads
+ *     are rejected in-band ("This demo is limited to 10 messages per
+ *     conversation. Start a new chat to continue."). Turns older than the
+ *     verbatim window are compacted into a single user message (contract and
+ *     replayed tool results included) instead of being dropped.
  *   - Upstream rate limits arrive in-band as `error:true` frames. Non-streaming
  *     requests surface them as HTTP 429/502; streaming requests emit an SSE
  *     error chunk before `[DONE]` (the response status is already committed).
@@ -39,6 +46,18 @@ import { isMissingBrowserExecutable } from "./browserExecutableCheck.ts";
 import { makeExecutorErrorResult as makeErrorResult } from "../utils/error.ts";
 import { connectObscuraBrowser } from "../services/obscura.ts";
 import type { Browser, Page } from "playwright";
+import {
+  parseCfToolCalls,
+  buildCfToolConversationPrompt,
+  stripCfToolMarkup,
+  finalizeCfToolCalls,
+  hasMalformedCfToolIntent,
+  cfToolNonce,
+  cfMessageText,
+  truncateCfMessage,
+  type CfParsedToolCall,
+  type CfToolDef,
+} from "../translator/cloudflarePlaygroundTools.ts";
 
 export const PLAYGROUND_URL = "https://playground.ai.cloudflare.com/";
 const PLAYGROUND_WS_BASE = "wss://playground.ai.cloudflare.com/agents/playground/";
@@ -56,6 +75,18 @@ const NAV_TIMEOUT_MS = 45_000;
 const CHAT_TIMEOUT_MS = 120_000;
 const BLOCKED_MESSAGE =
   "Cloudflare Playground blocked the headless browser (fingerprint check). Set CLOUDFLARE_PLAYGROUND_CHROME_PATH to a full desktop Chrome binary and retry.";
+
+/**
+ * Re-ask sent to a fresh room when a reply carried tool intent the parser could
+ * not read. It restates the contract's three hard requirements (one block per
+ * call, tool name as the tag, nonce included verbatim) because the models that
+ * invent their own envelope are the same ones that skim the contract.
+ */
+const CF_TOOL_REPAIR_NOTE =
+  "Your previous response contained a tool call that the client could not read, so it was rejected. " +
+  "Retry the requested next action from scratch, following the tool contract exactly: " +
+  "one block per call, the tool name as the tag, the arguments as a single JSON object, " +
+  "and the _nonce binding copied verbatim.";
 
 // ── Frame parsing & translation (pure — unit-tested against live captures) ──
 
@@ -185,28 +216,26 @@ export interface CfChatMessage {
 
 /**
  * Convert OpenAI-format messages to the playground's chat body shape.
- * `system` messages are dropped (the playground's persona is server-side) and
- * tool/image parts are flattened to text — v1 is text-only chat.
+ * `system` messages are dropped (the playground's persona is server-side).
+ * Tool calls and tool results are replayed as text so the model sees the
+ * conversation history. `execute()` runs the messages through
+ * `buildCfToolConversationPrompt` first, which injects the tool contract and
+ * trims the history to the playground's 10-user-message cap.
  */
 export function toCfMessages(
   messages: Array<{ role?: string; content?: unknown }>
 ): CfChatMessage[] {
   const out: CfChatMessage[] = [];
   for (const message of messages ?? []) {
-    if (message.role !== "user" && message.role !== "assistant") continue;
-    let text = "";
-    if (typeof message.content === "string") {
-      text = message.content;
-    } else if (Array.isArray(message.content)) {
-      text = message.content
-        .map((part) =>
-          typeof part === "string" ? part : ((part as { text?: string })?.text ?? "")
-        )
-        .filter(Boolean)
-        .join("\n");
-    }
+    if (message.role !== "user" && message.role !== "assistant" && message.role !== "tool")
+      continue;
+    const text = truncateCfMessage(cfMessageText(message));
     if (!text) continue;
-    out.push({ role: message.role, parts: [{ type: "text", text }], id: `m${out.length + 1}` });
+    out.push({
+      role: message.role === "tool" ? "user" : message.role,
+      parts: [{ type: "text", text }],
+      id: `m${out.length + 1}`,
+    });
   }
   return out;
 }
@@ -303,8 +332,14 @@ export interface CfTransport {
   close(): Promise<void>;
 }
 
-/** Open the anonymous playground session inside the browser page context. */
-function openPlaygroundSession(args: {
+/**
+ * Open the anonymous playground session inside the browser page context.
+ *
+ * Exported so tests can assert session isolation: every call must mint a new
+ * `playground-<uuid>` room and a new `_pk` key, so two requests can never share
+ * a playground conversation (and its 10-user-message history budget).
+ */
+export function openPlaygroundSession(args: {
   chatId: string;
   model: string;
   messages: CfChatMessage[];
@@ -520,165 +555,308 @@ export class CloudflarePlaygroundExecutor extends BaseExecutor {
     const chatId = `chatcmpl-cfp-${randomUUID().slice(0, 12)}`;
     const created = Math.floor(Date.now() / 1000);
 
-    const transport = this.transportFactory(chatId);
-    const started = await transport.start({
-      model,
-      messages: toCfMessages(
-        (bodyObj.messages as Array<{ role?: string; content?: unknown }>) || []
-      ),
-      temperature,
-      signal,
-    });
-    if (started.ok !== true) {
+    // Extract tools from request (OpenAI format)
+    const tools =
+      (bodyObj.tools as Array<{
+        type: string;
+        function: { name: string; description?: string; parameters: Record<string, unknown> };
+      }>) || [];
+    const hasTools = tools.length > 0;
+
+    // Build the playground payload: inject the tool contract, then enforce the
+    // playground's 10-user-message conversation cap (it rejects longer ones with
+    // "[429] This demo is limited to 10 messages per conversation"). Tool results
+    // replay as user messages, so an agent loop fills that budget fast — without
+    // trimming, every later turn of a long session fails and the client just
+    // retries the same oversized payload.
+    const originalMessages =
+      (bodyObj.messages as Array<{ role?: string; content?: unknown }>) || [];
+    const availableTools: CfToolDef[] = tools.map((t) => ({
+      name: t.function.name,
+      description: t.function.description,
+      parameters: t.function.parameters,
+    }));
+    const toolNames = availableTools.map((t) => t.name);
+    const nonce = hasTools ? cfToolNonce(tools) : "";
+
+    type CfAttemptResult =
+      | Extract<CfTransportStartResult, { ok: false }>
+      | { ok: true; parser: CfStreamParser; timedOut: boolean };
+
+    /**
+     * One playground request, drained to completion.
+     *
+     * Owns the transport for the whole attempt and always opens a fresh room:
+     * the playground keeps a per-room 10-user-message history, so resuming one
+     * would inherit a foreign history — which is also what makes the repair
+     * retry below safe to run.
+     */
+    const runAttempt = async (
+      messages: Array<{ role?: string; content?: unknown }>,
+      idSuffix: string
+    ): Promise<CfAttemptResult> => {
+      const transport = this.transportFactory(chatId + idSuffix);
+      const started = await transport.start({
+        model,
+        messages: toCfMessages(
+          buildCfToolConversationPrompt(
+            messages,
+            tools as Array<{
+              type: string;
+              function: {
+                name: string;
+                description?: string;
+                parameters: Record<string, unknown>;
+              };
+            }>
+          )
+        ),
+        temperature,
+        signal,
+      });
+      if (started.ok !== true) return started;
+
+      const timedOut = { current: false };
+      const timer = setTimeout(() => {
+        timedOut.current = true;
+        void transport.close();
+      }, this.chatTimeoutMs);
+
+      const parser = new CfStreamParser(chatId + idSuffix);
+      try {
+        for await (const raw of transport.frames()) {
+          if (signal?.aborted) break;
+          parser.push(raw);
+          if (parser.error || parser.done) break;
+          if (timedOut.current) break;
+        }
+      } finally {
+        clearTimeout(timer);
+        await transport.close().catch(() => {});
+      }
+      return { ok: true, parser, timedOut: timedOut.current };
+    };
+
+    /**
+     * Turn one raw reply into tool calls, held to the nonce + argument-schema
+     * contract. `null` means the reply expressed tool intent but did not hold up,
+     * so the caller retries once rather than shipping a turn that silently lost
+     * the call.
+     */
+    const parseAttempt = (text: string): CfParsedToolCall[] | null => {
+      if (!hasTools) return [];
+      const parsed = parseCfToolCalls(text, availableTools);
+      if (parsed.length === 0) {
+        // The real schemas matter: without them a nameless payload looks
+        // ambiguous and every such turn would be retried forever.
+        return hasMalformedCfToolIntent(text, toolNames, availableTools) ? null : [];
+      }
+      return finalizeCfToolCalls(parsed, tools, nonce);
+    };
+
+    const attemptMessages = (repairNote?: string) =>
+      repairNote ? [...originalMessages, { role: "user", content: repairNote }] : originalMessages;
+
+    const attempt = await runAttempt(attemptMessages(), "");
+    if (attempt.ok !== true) {
       return makeErrorResult(
-        started.status,
-        started.message,
+        attempt.status,
+        attempt.message,
         body,
         PLAYGROUND_URL,
-        started.fallbackHint ? { "X-Omni-Fallback-Hint": started.fallbackHint } : undefined
+        attempt.fallbackHint ? { "X-Omni-Fallback-Hint": attempt.fallbackHint } : undefined
       );
     }
 
-    const timedOut = { current: false };
-    const timer = setTimeout(() => {
-      timedOut.current = true;
-      void transport.close();
-    }, this.chatTimeoutMs);
+    let parser = attempt.parser;
+    let timedOut = attempt.timedOut;
+    let toolCalls = parseAttempt(parser.text);
 
-    try {
-      if (!wantStream) {
-        const parser = new CfStreamParser(chatId);
-        for await (const raw of transport.frames()) {
-          parser.push(raw);
-          if (parser.error || parser.done) break;
-        }
-        if (parser.error) {
-          return makeErrorResult(parser.error.status, parser.error.message, body, PLAYGROUND_URL);
-        }
-        if (timedOut.current && !parser.text) {
-          return makeErrorResult(504, "Cloudflare Playground timed out", body, PLAYGROUND_URL);
-        }
-        const text = parser.text;
-        const messagePayload: Record<string, unknown> = { role: "assistant", content: text };
-        if (parser.reasoningText) {
-          messagePayload.reasoning_content = parser.reasoningText;
-        }
-        return {
-          response: new Response(
-            JSON.stringify({
-              id: chatId,
-              object: "chat.completion",
-              created,
-              model: rawModel,
-              choices: [
-                {
-                  index: 0,
-                  message: messagePayload,
-                  finish_reason: parser.finishReason ?? "stop",
-                },
-              ],
-              usage: {
-                prompt_tokens: 0,
-                completion_tokens: Math.ceil((text.length + parser.reasoningText.length) / 4),
-                total_tokens: 0,
-              },
-            }),
-            { headers: { "Content-Type": "application/json" } }
-          ),
-          url: PLAYGROUND_URL,
-          headers: {},
-          transformedBody: body,
-        };
+    // A reply that carried tool intent but no readable call gets exactly one
+    // retry in a fresh room, with an explicit repair instruction. Before this an
+    // unrecognised markup shape silently became a text answer with the call
+    // buried inside it, and the client treated the turn as finished.
+    if (toolCalls === null) {
+      const repair = await runAttempt(attemptMessages(CF_TOOL_REPAIR_NOTE), "-repair");
+      if (repair.ok === true) {
+        parser = repair.parser;
+        timedOut = repair.timedOut;
+        // A second failure is answered as plain text: the model's own words are
+        // still more useful to the client than a 502, and a loop is worse.
+        toolCalls = parseAttempt(parser.text) ?? [];
+      } else {
+        toolCalls = [];
+      }
+    }
+
+    if (!wantStream) {
+      if (parser.error) {
+        return makeErrorResult(parser.error.status, parser.error.message, body, PLAYGROUND_URL);
+      }
+      if (timedOut && !parser.text) {
+        return makeErrorResult(504, "Cloudflare Playground timed out", body, PLAYGROUND_URL);
       }
 
-      // Streaming: translate cf_agent frames → OpenAI SSE chunks.
-      const encoder = new TextEncoder();
-      const responseStream = new ReadableStream<Uint8Array>({
-        async start(controller) {
-          const parser = new CfStreamParser(chatId);
-          let roleSent = false;
-          const enqueue = (payload: {
-            delta?: Record<string, unknown>;
-            finish_reason?: string | null;
-            error?: unknown;
-          }) => {
-            controller.enqueue(encoder.encode(sseChunk(chatId, created, rawModel, payload)));
-          };
-          try {
-            for await (const raw of transport.frames()) {
-              if (signal?.aborted) break;
-              const event = parser.push(raw);
-              if (event) {
-                if (event.type === "role" && !roleSent) {
-                  enqueue({ delta: { role: "assistant" }, finish_reason: null });
-                  roleSent = true;
-                } else if (event.type === "reasoning") {
-                  enqueue({ delta: { reasoning_content: event.value }, finish_reason: null });
-                } else if (event.type === "content") {
-                  enqueue({ delta: { content: event.value }, finish_reason: null });
-                } else if (event.type === "finish") {
-                  enqueue({ delta: {}, finish_reason: event.value ?? "stop" });
-                }
-              }
-              if (parser.error) {
-                enqueue({
-                  error: {
-                    message: parser.error.message,
-                    type: "upstream_error",
-                    code: `HTTP_${parser.error.status}`,
-                  },
-                });
-                break;
-              }
-              if (parser.done || timedOut.current) break;
-            }
-          } catch (error) {
-            if (!signal?.aborted) controller.error(error);
-          } finally {
-            clearTimeout(timer);
-            await transport.close().catch(() => {});
-            // #10494: a timeout used to fall straight through to a bare
-            // [DONE], so a client receiving an empty or partial stream saw
-            // an ordinary successful completion. Emit an explicit error
-            // chunk first (same shape as the parser.error branch above) so
-            // the client can distinguish a timed-out/partial answer from a
-            // real completion.
-            if (timedOut.current) {
-              try {
-                enqueue({
-                  error: {
-                    message: "Cloudflare Playground timed out",
-                    type: "timeout_error",
-                    code: "HTTP_504",
-                  },
-                });
-              } catch {
-                /* stream already torn down */
-              }
-            }
-            controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-            controller.close();
-          }
-        },
-      });
+      const text = parser.text;
+      let finishReason = parser.finishReason ?? "stop";
+      let content: string | null = text;
+      if (toolCalls.length > 0) {
+        finishReason = "tool_calls";
+        // Strip tool markup from content
+        content = stripCfToolMarkup(
+          text,
+          availableTools.map((t) => t.name)
+        );
+        if (!content) content = null;
+      }
+
+      const messagePayload: Record<string, unknown> = { role: "assistant", content };
+      if (parser.reasoningText) {
+        messagePayload.reasoning_content = parser.reasoningText;
+      }
+      if (toolCalls.length > 0) {
+        messagePayload.tool_calls = toolCalls.map((tc) => ({
+          id: tc.id,
+          type: "function",
+          function: { name: tc.name, arguments: tc.arguments },
+        }));
+      }
 
       return {
-        response: new Response(responseStream, {
-          headers: {
-            "Content-Type": "text/event-stream",
-            "Cache-Control": "no-cache",
-            Connection: "keep-alive",
-          },
-        }),
+        response: new Response(
+          JSON.stringify({
+            id: chatId,
+            object: "chat.completion",
+            created,
+            model: rawModel,
+            choices: [
+              {
+                index: 0,
+                message: messagePayload,
+                finish_reason: finishReason,
+              },
+            ],
+            usage: {
+              prompt_tokens: 0,
+              completion_tokens: Math.ceil((text.length + parser.reasoningText.length) / 4),
+              total_tokens: 0,
+            },
+          }),
+          { headers: { "Content-Type": "application/json" } }
+        ),
         url: PLAYGROUND_URL,
         headers: {},
         transformedBody: body,
       };
-    } finally {
-      if (!wantStream) {
-        clearTimeout(timer);
-        await transport.close().catch(() => {});
-      }
     }
+
+    // Streaming: buffer the full response first, then parse tool calls and emit clean chunks
+    const encoder = new TextEncoder();
+    const bufferError = parser.error ?? null;
+    const bufferReasoning = parser.reasoningText;
+
+    const fullText = parser.text;
+    let finishReason = parser.finishReason ?? "stop";
+    let content: string | null = fullText;
+    if (toolCalls.length > 0) {
+      finishReason = "tool_calls";
+      content = stripCfToolMarkup(fullText, toolNames);
+      if (!content) content = null;
+    }
+
+    // Build the response stream
+    const responseStream = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        const enqueue = (payload: {
+          delta?: Record<string, unknown>;
+          finish_reason?: string | null;
+          error?: unknown;
+        }) => {
+          controller.enqueue(encoder.encode(sseChunk(chatId, created, rawModel, payload)));
+        };
+
+        try {
+          // Emit role
+          enqueue({ delta: { role: "assistant" }, finish_reason: null });
+
+          // Emit reasoning if present
+          if (bufferReasoning) {
+            enqueue({ delta: { reasoning_content: bufferReasoning }, finish_reason: null });
+          }
+
+          // Emit content (without tool markup)
+          if (content) {
+            enqueue({ delta: { content }, finish_reason: null });
+          }
+
+          // Emit tool_calls if present — one delta per call, each carrying its
+          // `index`. A streaming client keys the calls it reassembles on that
+          // index (it is how the OpenAI SDK accumulates them), so a batch
+          // without one collapses N parallel calls into a single call whose name
+          // and arguments are the concatenation of all of them.
+          toolCalls.forEach((tc, index) => {
+            enqueue({
+              delta: {
+                tool_calls: [
+                  {
+                    index,
+                    id: tc.id,
+                    type: "function",
+                    function: { name: tc.name, arguments: tc.arguments },
+                  },
+                ],
+              },
+              finish_reason: null,
+            });
+          });
+
+          // Handle errors
+          if (bufferError) {
+            enqueue({
+              error: {
+                message: bufferError.message,
+                type: "upstream_error",
+                code: `HTTP_${bufferError.status}`,
+              },
+            });
+          } else if (timedOut) {
+            enqueue({
+              error: {
+                message: "Cloudflare Playground timed out",
+                type: "timeout_error",
+                code: "HTTP_504",
+              },
+            });
+          }
+
+          // Final chunk with finish_reason
+          enqueue({ delta: {}, finish_reason: finishReason });
+        } catch (error) {
+          if (!signal?.aborted) controller.error(error);
+        } finally {
+          // The attempt helper already closed its transport; the whole reply was
+          // buffered above, so there is nothing left to drain here.
+          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+          controller.close();
+        }
+      },
+      cancel() {
+        // Nothing to release: the attempt's transport was closed before this
+        // stream was handed to the client.
+      },
+    });
+
+    return {
+      response: new Response(responseStream, {
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        },
+      }),
+      url: PLAYGROUND_URL,
+      headers: {},
+      transformedBody: body,
+    };
   }
 }
