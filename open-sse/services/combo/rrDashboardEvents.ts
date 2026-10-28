@@ -20,7 +20,8 @@ export function createRRDashboardEvents(
   comboName: string,
   targetIndex: number,
   provider: string,
-  model: string
+  model: string,
+  connectionId?: string | null
 ): RRDashboardEvents {
   return {
     attempt() {
@@ -31,13 +32,29 @@ export function createRRDashboardEvents(
         model,
         timestamp: Date.now(),
         strategy: "round-robin",
+        ...(connectionId ? { connectionId } : {}),
       });
     },
     succeeded(latencyMs) {
-      emit("combo.target.succeeded", { comboName, targetIndex, provider, model, latencyMs });
+      emit("combo.target.succeeded", {
+        comboName,
+        targetIndex,
+        provider,
+        model,
+        latencyMs,
+        ...(connectionId ? { connectionId } : {}),
+      });
     },
     failed(error, latencyMs) {
-      emit("combo.target.failed", { comboName, targetIndex, provider, model, error, latencyMs });
+      emit("combo.target.failed", {
+        comboName,
+        targetIndex,
+        provider,
+        model,
+        error,
+        latencyMs,
+        ...(connectionId ? { connectionId } : {}),
+      });
     },
   };
 }
