@@ -181,8 +181,10 @@ function applyUsageMetadata(parsed: Record<string, unknown>, acc: GeminiSSEAccum
   if (!um) return;
 
   const previousUsage = acc.usage ?? {};
-  const promptTokens = nonNegativeOr(um.promptTokenCount, previousUsage.prompt_tokens);
-  const completionTokens = nonNegativeOr(um.candidatesTokenCount, previousUsage.completion_tokens);
+  const previousPromptTokens = nonNegativeOr(previousUsage.prompt_tokens, undefined);
+  const previousCompletionTokens = nonNegativeOr(previousUsage.completion_tokens, undefined);
+  const promptTokens = nonNegativeOr(um.promptTokenCount, previousPromptTokens);
+  const completionTokens = nonNegativeOr(um.candidatesTokenCount, previousCompletionTokens);
   // Gemini may omit totalTokenCount (or report 0); keep the last total, else derive it.
   const totalTokens =
     nonNegativeOr(um.totalTokenCount, 0) ||
