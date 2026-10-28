@@ -22,10 +22,13 @@ const CURATED_MODEL_ONLY_PROVIDERS = new Set<string>([
   // The clean-room browser integration exposes only model/effort routes
   // observed in the first-party picker. It has no upstream model-list API.
   "chatgpt-web",
-  // CodeBuddy gateways (Tencent CN and intl) publish no model-catalog endpoint;
-  // their registry models are the complete curated lineup.
+  // CodeBuddy CN publishes no model-catalog endpoint; its registry models are
+  // the complete curated lineup.
   "codebuddy-cn",
-  "codebuddy-intl",
+  // codebuddy-intl is deliberately NOT here: it exposes an authenticated
+  // `GET /v3/config` catalog that is merged into the curated list at runtime
+  // (open-sse/executors/codebuddy-intl/catalog.ts), so the registry list is a
+  // fallback rather than the complete lineup.
 ]);
 
 export function providerUsesCuratedModelsOnly(providerId: string): boolean {

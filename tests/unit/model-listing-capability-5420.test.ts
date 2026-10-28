@@ -37,7 +37,10 @@ describe("providerLacksModelListing (#5420)", () => {
     assert.equal(providerUsesCuratedModelsOnly("zai-web"), true);
     assert.equal(providerUsesCuratedModelsOnly("chatgpt-web"), true);
     assert.equal(providerUsesCuratedModelsOnly("codebuddy-cn"), true);
-    assert.equal(providerUsesCuratedModelsOnly("codebuddy-intl"), true);
+    // codebuddy-intl is NOT curated-only any more: it exposes an authenticated
+    // `GET /v3/config` catalog, wired to model discovery through
+    // open-sse/services/codebuddyIntlCatalog.ts. Its registry list is a fallback.
+    assert.equal(providerUsesCuratedModelsOnly("codebuddy-intl"), false);
     assert.equal(providerUsesCuratedModelsOnly("cgpt-web"), false);
     assert.equal(providerUsesCuratedModelsOnly("qwen-cloud"), false);
     assert.equal(providerUsesCuratedModelsOnly("kimi-coding"), false);
