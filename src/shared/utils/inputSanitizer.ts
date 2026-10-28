@@ -13,11 +13,7 @@ import {
   shouldBlockDetections,
 } from "@/shared/utils/injectionSeverity";
 import { PII_REQUEST_TYPE_ALIASES } from "@/shared/constants/piiTypes";
-import {
-  TokenVaultManager,
-  isReversibleVaultEnabled,
-  resolveVault,
-} from "@/lib/pii/tokenVault";
+import { isReversibleVaultEnabled, resolveVault } from "@/lib/pii/tokenVault";
 
 // ─── Prompt Injection Patterns ───────────────────────────────────────
 

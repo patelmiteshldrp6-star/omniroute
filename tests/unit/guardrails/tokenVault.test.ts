@@ -3,7 +3,6 @@ import assert from "node:assert/strict";
 
 import {
   TokenVault,
-  TokenVaultManager,
   createDetokenizingStream,
   detokenizeResponsePayload,
   safeJsonEscape,
