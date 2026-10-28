@@ -25,6 +25,7 @@
     "sharedComponents",
     "sidebar",
     "stats",
+    "teamCosts",
     "traeAuthModal",
     "trafficInspector"
   ],
@@ -56,6 +57,7 @@
     "sharedComponents",
     "sidebar",
     "stats",
+    "teamCosts",
     "traeAuthModal",
     "trafficInspector",
     "usage",
@@ -88,6 +90,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -119,6 +122,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -148,6 +152,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -176,6 +181,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -204,6 +210,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector",
       "usage"
@@ -234,6 +241,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -265,6 +273,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector",
       "usageLimits"
@@ -295,6 +304,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -323,6 +333,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -351,6 +362,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -382,6 +394,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -411,6 +424,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -440,6 +454,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -471,6 +486,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -502,6 +518,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -531,10 +548,12 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
     "combos": [
+      "accountPreferences",
       "agentSkills",
       "analytics",
       "breadcrumbs",
@@ -562,6 +581,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -592,6 +612,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -621,6 +642,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -655,6 +677,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -683,6 +706,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -714,6 +738,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector",
       "usage",
@@ -745,6 +770,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -776,6 +802,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -805,6 +832,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -834,6 +862,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -862,6 +891,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -894,6 +924,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "telemetry",
       "traeAuthModal",
       "trafficInspector"
@@ -924,6 +955,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -952,6 +984,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -981,6 +1014,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1011,6 +1045,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1040,6 +1075,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1070,6 +1106,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1099,6 +1136,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1128,6 +1166,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1157,6 +1196,7 @@
       "sidebar",
       "skills",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1186,6 +1226,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1216,6 +1257,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1245,6 +1287,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector",
       "translator"
@@ -1275,6 +1318,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1304,6 +1348,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1333,6 +1378,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1368,6 +1414,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1397,6 +1444,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector",
       "usage",
@@ -1432,6 +1480,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1461,6 +1510,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1491,6 +1541,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1521,6 +1572,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1551,6 +1603,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1588,6 +1641,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1619,6 +1673,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1647,6 +1702,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1677,6 +1733,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector"
     ],
@@ -1706,6 +1763,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector",
       "translator"
@@ -1737,6 +1795,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector",
       "usage",
@@ -1767,6 +1826,7 @@
       "sharedComponents",
       "sidebar",
       "stats",
+      "teamCosts",
       "traeAuthModal",
       "trafficInspector",
       "webhooks"
