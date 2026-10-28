@@ -1702,6 +1702,7 @@ that should be able to run the docs translator.
 | `OMNIROUTE_TRANSLATION_GOOGLE_API_KEY` | _(unset)_ | `scripts/i18n/lib/google-translate.mjs` | Optional Cloud Translation v2 key. Unset uses the keyless web endpoint (rate-limited, fine for occasional waves). |
 | `OMNIROUTE_TRANSLATION_GOOGLE_CONCURRENCY` | `6` | `scripts/i18n/lib/google-translate.mjs` | Parallel Google requests shared by every locale of a run. |
 | `OMNIROUTE_TRANSLATION_GOOGLE_TIMEOUT_MS` | `30000` | `scripts/i18n/lib/google-translate.mjs` | Per-request timeout for the Google engine, in milliseconds. |
+| `UI_KIT_READ_TOKEN` | _(unset)_ | `scripts/check/check-ui-kit-upstream.mjs` | Read-only token for the private upstream UI kit repo, used by `npm run check:ui-kit-upstream` and the weekly "UI Kit upstream watch" workflow. Locally the check uses your git credentials. |
 
 ---
 
