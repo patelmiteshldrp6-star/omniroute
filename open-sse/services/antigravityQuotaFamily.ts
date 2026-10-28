@@ -73,7 +73,7 @@ export function quotaWindowNamesForScope(
 ): string[] {
   if (!scope?.requestedModel || !isAntigravityQuotaProvider(scope.provider)) return names;
   const scoped = selectAntigravityQuotaWindowNames(names, scope.requestedModel);
-  return scoped.length > 0 ? scoped : names;
+  return scoped;
 }
 
 /**
@@ -165,7 +165,11 @@ export function selectAntigravityQuotaWindowNames(
   const scoped = [...exactWindows, ...aggregateWindows];
   if (scoped.length > 0) return scoped;
 
-  return quotaNames.filter(
-    (windowName) => getAntigravityQuotaFamily(windowName) === requestedFamily
-  );
+  if (requestedFamily === "claude") {
+    return quotaNames.filter(
+      (windowName) => getAntigravityQuotaFamily(windowName) === requestedFamily
+    );
+  }
+
+  return [];
 }
