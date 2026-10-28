@@ -21,9 +21,6 @@ const settingsAssignmentsRoute =
 const settingsBulkAssignRoute =
   await import("../../src/app/api/settings/proxies/bulk-assign/route.ts");
 
-const settingsAssignmentsRoute =
-  await import("../../src/app/api/settings/proxies/assignments/route.ts");
-
 test("settings and v1 bulk assignment retain matching validation and auth responses", async () => {
   await resetStorage();
   for (const [handler, url] of [

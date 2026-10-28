@@ -1,1 +1,0 @@
-- **fix(i18n):** zh-CN/zh-TW quotaAuthRequiredHint use the canonical provider term 提供者 ([#18368](https://github.com/diegosouzapw/OmniRoute/pull/18368)) — thanks @RaviTharuma
