@@ -12883,7 +12883,8 @@
     "title": "Provayder statistikası",
     "description": "Provayder və model üzrə trafik, gecikmə və uğur göstəriciləri",
     "combo": "Kombinasiya",
-    "toggleModels": "{provider} üçün modelləri göstər"
+    "toggleModels": "{provider} üçün modelləri göstər",
+    "windowSince": "{date} tarixindən"
   },
   "relay": {
     "title": "Serverless Relay proksiləri",

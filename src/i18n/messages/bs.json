@@ -12883,7 +12883,8 @@
     "title": "Statistika pružalaca usluga",
     "description": "Saobraćaj, latencija i stope uspješnosti po pružaocu usluga i modelu",
     "combo": "Kombinovano",
-    "toggleModels": "Prikaži modele za {provider}"
+    "toggleModels": "Prikaži modele za {provider}",
+    "windowSince": "Od {date}"
   },
   "relay": {
     "title": "Serverless Relay Proxy-ji",

@@ -12883,7 +12883,8 @@
     "title": "የአቅራቢ ስታቲስቲክስ",
     "description": "በእያንዳንዱ አቅራቢና ሞዴል የትራፊክ መጠን፣ መዘግየት እና የስኬት ምጣኔዎች",
     "combo": "ጥምር",
-    "toggleModels": "የ{provider} ሞዴሎችን አሳይ"
+    "toggleModels": "የ{provider} ሞዴሎችን አሳይ",
+    "windowSince": "ከ{date} ወዲህ"
   },
   "relay": {
     "title": "ሰርቨር-አልባ ሪሌይ ፕሮክሲዎች",

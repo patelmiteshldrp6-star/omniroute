@@ -12806,7 +12806,8 @@
     "title": "Szolgáltatói statisztikák",
     "description": "Szolgáltatónkénti és modellenkénti forgalom, késleltetés és sikerességi arány",
     "combo": "Kombinált",
-    "toggleModels": "A(z) {provider} modelljeinek megjelenítése"
+    "toggleModels": "A(z) {provider} modelljeinek megjelenítése",
+    "windowSince": "{date} óta"
   },
   "relay": {
     "title": "Szerver nélküli közvetítő proxyk",

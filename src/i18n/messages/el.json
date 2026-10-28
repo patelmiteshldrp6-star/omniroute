@@ -12806,7 +12806,8 @@
     "title": "Στατιστικά παρόχων",
     "description": "Κίνηση, καθυστέρηση και ποσοστά επιτυχίας ανά πάροχο και ανά μοντέλο",
     "combo": "Συνδυασμός",
-    "toggleModels": "Εμφάνιση μοντέλων για {provider}"
+    "toggleModels": "Εμφάνιση μοντέλων για {provider}",
+    "windowSince": "Από {date}"
   },
   "relay": {
     "title": "Serverless proxy αναμετάδοσης",

@@ -12806,7 +12806,8 @@
     "title": "Palveluntarjoajien tilastot",
     "description": "Palveluntarjoaja- ja mallikohtainen liikenne, viive ja onnistumisasteet",
     "combo": "Yhdistelmä",
-    "toggleModels": "Näytä palveluntarjoajan {provider} mallit"
+    "toggleModels": "Näytä palveluntarjoajan {provider} mallit",
+    "windowSince": "{date} lähtien"
   },
   "relay": {
     "title": "Serverless-välityspalvelimet",

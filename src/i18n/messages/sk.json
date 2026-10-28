@@ -12806,7 +12806,8 @@
     "title": "Štatistiky poskytovateľov",
     "description": "Prevádzka, latencia a miera úspešnosti podľa poskytovateľa a modelu",
     "combo": "Kombinácia",
-    "toggleModels": "Zobraziť modely pre {provider}"
+    "toggleModels": "Zobraziť modely pre {provider}",
+    "windowSince": "Od {date}"
   },
   "relay": {
     "title": "Serverless relay proxy",

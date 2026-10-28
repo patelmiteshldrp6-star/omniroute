@@ -12806,7 +12806,8 @@
     "title": "สถิติผู้ให้บริการ",
     "description": "ทราฟฟิก เวลาแฝง และอัตราความสำเร็จแยกตามผู้ให้บริการและโมเดล",
     "combo": "แบบรวม",
-    "toggleModels": "แสดงโมเดลสำหรับ {provider}"
+    "toggleModels": "แสดงโมเดลสำหรับ {provider}",
+    "windowSince": "ตั้งแต่ {date}"
   },
   "relay": {
     "title": "พร็อกซี Serverless Relay",

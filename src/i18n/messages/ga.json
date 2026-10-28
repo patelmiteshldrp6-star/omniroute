@@ -12806,7 +12806,8 @@
     "title": "Staitisticí soláthraithe",
     "description": "Trácht, aga folaigh agus rátaí ratha de réir soláthraí agus de réir samhla",
     "combo": "Teaglaim",
-    "toggleModels": "Taispeáin samhlacha do {provider}"
+    "toggleModels": "Taispeáin samhlacha do {provider}",
+    "windowSince": "Ó {date}"
   },
   "relay": {
     "title": "Seachfhreastalaithe Relé Gan Freastalaí",

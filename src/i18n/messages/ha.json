@@ -12806,7 +12806,8 @@
     "title": "Ƙididdigar masu samarwa",
     "description": "Zirga-zirga, jinkiri da ƙimar nasara ta kowane mai samarwa da kowane samfuri",
     "combo": "Haɗaka",
-    "toggleModels": "Nuna samfura na {provider}"
+    "toggleModels": "Nuna samfura na {provider}",
+    "windowSince": "Tun {date}"
   },
   "relay": {
     "title": "Proxies na Relay Marasa Sabar",

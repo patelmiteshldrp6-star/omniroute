@@ -12806,7 +12806,8 @@
     "title": "제공업체 통계",
     "description": "제공업체별 및 모델별 트래픽, 지연 시간, 성공률",
     "combo": "조합",
-    "toggleModels": "{provider}의 모델 표시"
+    "toggleModels": "{provider}의 모델 표시",
+    "windowSince": "{date} 이후"
   },
   "relay": {
     "title": "서버리스 릴레이 프록시",

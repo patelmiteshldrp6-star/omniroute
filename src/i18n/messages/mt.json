@@ -12883,7 +12883,8 @@
     "title": "Statistika tal-fornituri",
     "description": "Traffiku, latenza u rati ta’ suċċess għal kull fornitur u għal kull mudell",
     "combo": "Kombinazzjoni",
-    "toggleModels": "Uri l-mudelli għal {provider}"
+    "toggleModels": "Uri l-mudelli għal {provider}",
+    "windowSince": "Minn {date}"
   },
   "relay": {
     "title": "Proxies tar-Relay mingħajr server",

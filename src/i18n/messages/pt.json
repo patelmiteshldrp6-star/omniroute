@@ -12883,7 +12883,8 @@
     "title": "Estatísticas dos fornecedores",
     "description": "Tráfego, latência e taxas de sucesso por fornecedor e por modelo",
     "combo": "Combinação",
-    "toggleModels": "Mostrar modelos de {provider}"
+    "toggleModels": "Mostrar modelos de {provider}",
+    "windowSince": "Desde {date}"
   },
   "relay": {
     "title": "Proxies de relay serverless",

@@ -12883,7 +12883,8 @@
     "title": "إحصاءات مزوّدي الخدمة",
     "description": "حركة المرور وزمن الاستجابة ومعدلات النجاح لكل مزوّد خدمة ولكل نموذج",
     "combo": "مركّب",
-    "toggleModels": "إظهار نماذج {provider}"
+    "toggleModels": "إظهار نماذج {provider}",
+    "windowSince": "منذ {date}"
   },
   "relay": {
     "title": "وكلاء الترحيل بلا خادم",

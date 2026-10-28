@@ -12806,7 +12806,8 @@
     "title": "Sağlayıcı istatistikleri",
     "description": "Sağlayıcı ve model bazında trafik, gecikme ve başarı oranları",
     "combo": "Kombinasyon",
-    "toggleModels": "{provider} modellerini göster"
+    "toggleModels": "{provider} modellerini göster",
+    "windowSince": "{date} tarihinden beri"
   },
   "relay": {
     "title": "Serverless Relay Proxy'leri",

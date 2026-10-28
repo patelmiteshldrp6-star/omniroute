@@ -12883,7 +12883,8 @@
     "title": "Статистика за доставчиците",
     "description": "Трафик, латентност и проценти на успеваемост по доставчик и модел",
     "combo": "Комбинация",
-    "toggleModels": "Показване на моделите за {provider}"
+    "toggleModels": "Показване на моделите за {provider}",
+    "windowSince": "От {date}"
   },
   "relay": {
     "title": "Serverless Relay проксита",

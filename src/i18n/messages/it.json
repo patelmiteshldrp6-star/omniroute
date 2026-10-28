@@ -12883,7 +12883,8 @@
     "title": "Statistiche dei provider",
     "description": "Traffico, latenza e percentuali di successo per provider e per modello",
     "combo": "Combinazione",
-    "toggleModels": "Mostra i modelli di {provider}"
+    "toggleModels": "Mostra i modelli di {provider}",
+    "windowSince": "Dal {date}"
   },
   "relay": {
     "title": "Proxy relay serverless",

@@ -12806,7 +12806,8 @@
     "title": "Mga istatistika ng provider",
     "description": "Trapiko, latency, at mga rate ng tagumpay kada provider at kada modelo",
     "combo": "Kombinasyon",
-    "toggleModels": "Ipakita ang mga modelo para sa {provider}"
+    "toggleModels": "Ipakita ang mga modelo para sa {provider}",
+    "windowSince": "Mula {date}"
   },
   "relay": {
     "title": "Mga Serverless Relay Proxy",

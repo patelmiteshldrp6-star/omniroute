@@ -12806,7 +12806,8 @@
     "title": "Providerstatistieken",
     "description": "Verkeer, latentie en succespercentages per provider en per model",
     "combo": "Combinatie",
-    "toggleModels": "Modellen voor {provider} tonen"
+    "toggleModels": "Modellen voor {provider} tonen",
+    "windowSince": "Sinds {date}"
   },
   "relay": {
     "title": "Serverless relay-proxy's",

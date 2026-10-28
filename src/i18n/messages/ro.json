@@ -12806,7 +12806,8 @@
     "title": "Statistici despre furnizori",
     "description": "Trafic, latență și rate de succes pentru fiecare furnizor și model",
     "combo": "Combinație",
-    "toggleModels": "Afișează modelele pentru {provider}"
+    "toggleModels": "Afișează modelele pentru {provider}",
+    "windowSince": "Din {date}"
   },
   "relay": {
     "title": "Proxy-uri relay serverless",

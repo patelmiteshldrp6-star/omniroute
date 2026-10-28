@@ -12806,7 +12806,8 @@
     "title": "סטטיסטיקות ספקים",
     "description": "תעבורה, זמני השהיה ושיעורי הצלחה לפי ספק ולפי מודל",
     "combo": "משולב",
-    "toggleModels": "הצגת מודלים עבור {provider}"
+    "toggleModels": "הצגת מודלים עבור {provider}",
+    "windowSince": "מאז {date}"
   },
   "relay": {
     "title": "פרוקסי Relay ללא שרת",

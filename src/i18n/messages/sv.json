@@ -12806,7 +12806,8 @@
     "title": "Leverantörsstatistik",
     "description": "Trafik, latens och lyckandefrekvens per leverantör och modell",
     "combo": "Kombination",
-    "toggleModels": "Visa modeller för {provider}"
+    "toggleModels": "Visa modeller för {provider}",
+    "windowSince": "Sedan {date}"
   },
   "relay": {
     "title": "Serverlösa relay-proxies",

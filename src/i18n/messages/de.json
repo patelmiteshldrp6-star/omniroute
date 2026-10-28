@@ -12806,7 +12806,8 @@
     "title": "Anbieterstatistiken",
     "description": "Datenverkehr, Latenz und Erfolgsraten pro Anbieter und Modell",
     "combo": "Kombination",
-    "toggleModels": "Modelle für {provider} anzeigen"
+    "toggleModels": "Modelle für {provider} anzeigen",
+    "windowSince": "Seit {date}"
   },
   "relay": {
     "title": "Serverless-Relay-Proxies",

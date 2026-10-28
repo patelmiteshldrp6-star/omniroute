@@ -12806,7 +12806,8 @@
     "title": "Provayder statistikasi",
     "description": "Har bir provayder va model boʻyicha trafik, kechikish va muvaffaqiyat koʻrsatkichlari",
     "combo": "Kombinatsiya",
-    "toggleModels": "{provider} modellarini koʻrsatish"
+    "toggleModels": "{provider} modellarini koʻrsatish",
+    "windowSince": "{date} dan beri"
   },
   "relay": {
     "title": "Serversiz rele proksilari",

@@ -12806,7 +12806,8 @@
     "title": "Estadísticas de proveedores",
     "description": "Tráfico, latencia y tasas de éxito por proveedor y por modelo",
     "combo": "Combinado",
-    "toggleModels": "Mostrar modelos de {provider}"
+    "toggleModels": "Mostrar modelos de {provider}",
+    "windowSince": "Desde {date}"
   },
   "relay": {
     "title": "Proxies de retransmisión sin servidor",

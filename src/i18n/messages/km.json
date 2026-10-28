@@ -12883,7 +12883,8 @@
     "title": "ស្ថិតិអ្នកផ្តល់សេវា",
     "description": "ចរាចរណ៍ រយៈពេលឆ្លើយតប និងអត្រាជោគជ័យតាមអ្នកផ្តល់សេវា និងតាមម៉ូដែល",
     "combo": "បន្សំ",
-    "toggleModels": "បង្ហាញម៉ូដែលសម្រាប់ {provider}"
+    "toggleModels": "បង្ហាញម៉ូដែលសម្រាប់ {provider}",
+    "windowSince": "តាំងពី {date}"
   },
   "relay": {
     "title": "ប្រូកស៊ី Relay បែប Serverless",

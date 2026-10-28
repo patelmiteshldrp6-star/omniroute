@@ -12806,7 +12806,8 @@
     "title": "Teikėjų statistika",
     "description": "Kiekvieno teikėjo ir modelio srautas, delsa bei sėkmės rodikliai",
     "combo": "Derinys",
-    "toggleModels": "Rodyti {provider} modelius"
+    "toggleModels": "Rodyti {provider} modelius",
+    "windowSince": "Nuo {date}"
   },
   "relay": {
     "title": "Be serverių veikiantys perdavimo tarpiniai serveriai",

@@ -12806,7 +12806,8 @@
     "title": "Statistika pružatelja",
     "description": "Promet, latencija i stope uspješnosti po pružatelju i modelu",
     "combo": "Kombinirano",
-    "toggleModels": "Prikaži modele za {provider}"
+    "toggleModels": "Prikaži modele za {provider}",
+    "windowSince": "Od {date}"
   },
   "relay": {
     "title": "Relejni proxyji bez poslužitelja",

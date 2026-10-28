@@ -12806,7 +12806,8 @@
     "title": "Ọnụọgụgụ ndị na-eweta",
     "description": "Ngagharị data, oge igbu oge na ọnụego ihe ịga nke ọma nke onye na-eweta ọ bụla na ụdị ọ bụla",
     "combo": "Ngwakọta",
-    "toggleModels": "Gosi ụdị nke {provider}"
+    "toggleModels": "Gosi ụdị nke {provider}",
+    "windowSince": "Kemgbe {date}"
   },
   "relay": {
     "title": "Proksi Relay Serverless",

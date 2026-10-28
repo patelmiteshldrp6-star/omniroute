@@ -12883,7 +12883,8 @@
     "title": "Udbyderstatistik",
     "description": "Trafik, svartid og succesrater pr. udbyder og model",
     "combo": "Kombination",
-    "toggleModels": "Vis modeller for {provider}"
+    "toggleModels": "Vis modeller for {provider}",
+    "windowSince": "Siden {date}"
   },
   "relay": {
     "title": "Serverless relay-proxies",

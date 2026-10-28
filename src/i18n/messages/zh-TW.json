@@ -12806,7 +12806,8 @@
     "title": "提供者統計資料",
     "description": "各提供者與各模型的流量、延遲及成功率",
     "combo": "組合",
-    "toggleModels": "顯示 {provider} 的模型"
+    "toggleModels": "顯示 {provider} 的模型",
+    "windowSince": "自 {date}"
   },
   "relay": {
     "title": "無伺服器 Relay 代理",

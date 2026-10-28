@@ -12806,7 +12806,8 @@
     "title": "Àwọn ìṣirò olùpèsè",
     "description": "Ìṣàn, àkókò ìdádúró àti àwọn oṣùwọ̀n àṣeyọrí fún olùpèsè kọ̀ọ̀kan àti àwòṣe kọ̀ọ̀kan",
     "combo": "Àkójọpọ̀",
-    "toggleModels": "Ṣàfihàn àwọn àwòṣe fún {provider}"
+    "toggleModels": "Ṣàfihàn àwọn àwòṣe fún {provider}",
+    "windowSince": "Tió {date}"
   },
   "relay": {
     "title": "Àwọn Prọ́ọ̀sì Relay Aláìní Sẹ́fà",

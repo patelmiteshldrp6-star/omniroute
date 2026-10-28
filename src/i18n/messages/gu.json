@@ -12806,7 +12806,8 @@
     "title": "પ્રદાતા આંકડા",
     "description": "પ્રતિ-પ્રદાતા અને પ્રતિ-મોડલ ટ્રાફિક, વિલંબ અને સફળતા દર",
     "combo": "કોમ્બો",
-    "toggleModels": "{provider} માટે મોડલ્સ બતાવો"
+    "toggleModels": "{provider} માટે મોડલ્સ બતાવો",
+    "windowSince": "{date} થી"
   },
   "relay": {
     "title": "સર્વરલેસ રિલે પ્રોક્સીઝ",

@@ -12806,7 +12806,8 @@
     "title": "Statistiques des fournisseurs",
     "description": "Trafic, latence et taux de réussite par fournisseur et par modèle",
     "combo": "Combiné",
-    "toggleModels": "Afficher les modèles de {provider}"
+    "toggleModels": "Afficher les modèles de {provider}",
+    "windowSince": "Depuis {date}"
   },
   "relay": {
     "title": "Proxies relais serverless",

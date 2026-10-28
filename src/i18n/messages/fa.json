@@ -12806,7 +12806,8 @@
     "title": "آمار ارائهدهنده",
     "description": "ترافیک، تأخیر و نرخ موفقیت بهتفکیک ارائهدهنده و مدل",
     "combo": "ترکیبی",
-    "toggleModels": "نمایش مدلهای {provider}"
+    "toggleModels": "نمایش مدلهای {provider}",
+    "windowSince": "از {date}"
   },
   "relay": {
     "title": "پروکسی‌های رله بدون سرور",

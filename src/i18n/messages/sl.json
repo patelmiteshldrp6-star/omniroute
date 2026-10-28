@@ -12806,7 +12806,8 @@
     "title": "Statistika ponudnikov",
     "description": "Promet, zakasnitev in stopnje uspešnosti po ponudnikih in modelih",
     "combo": "Kombinacija",
-    "toggleModels": "Prikaži modele za {provider}"
+    "toggleModels": "Prikaži modele za {provider}",
+    "windowSince": "Od {date}"
   },
   "relay": {
     "title": "Brezstrežniški relejni posredniški strežniki",

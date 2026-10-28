@@ -12806,7 +12806,8 @@
     "title": "Statystyki dostawców",
     "description": "Ruch, opóźnienia i wskaźniki powodzenia według dostawców i modeli",
     "combo": "Kombinacja",
-    "toggleModels": "Pokaż modele dla {provider}"
+    "toggleModels": "Pokaż modele dla {provider}",
+    "windowSince": "Od {date}"
   },
   "relay": {
     "title": "Bezserwerowe proxy przekaźnikowe",

@@ -12883,7 +12883,8 @@
     "title": "ਪ੍ਰਦਾਤਾ ਅੰਕੜੇ",
     "description": "ਹਰ ਪ੍ਰਦਾਤਾ ਅਤੇ ਹਰ ਮਾਡਲ ਮੁਤਾਬਕ ਟ੍ਰੈਫਿਕ, ਲੇਟੈਂਸੀ ਅਤੇ ਸਫਲਤਾ ਦਰਾਂ",
     "combo": "ਕੌਂਬੋ",
-    "toggleModels": "{provider} ਲਈ ਮਾਡਲ ਦਿਖਾਓ"
+    "toggleModels": "{provider} ਲਈ ਮਾਡਲ ਦਿਖਾਓ",
+    "windowSince": "{date} ਤੋਂ"
   },
   "relay": {
     "title": "ਸਰਵਰਲੈੱਸ ਰੀਲੇ ਪ੍ਰਾਕਸੀ",

@@ -12806,7 +12806,8 @@
     "title": "Statistik penyedia",
     "description": "Lalu lintas, latensi, dan tingkat keberhasilan per penyedia dan per model",
     "combo": "Kombinasi",
-    "toggleModels": "Tampilkan model untuk {provider}"
+    "toggleModels": "Tampilkan model untuk {provider}",
+    "windowSince": "Sejak {date}"
   },
   "relay": {
     "title": "Proksi Relai Serverless",

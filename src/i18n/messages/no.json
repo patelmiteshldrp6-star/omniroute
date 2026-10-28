@@ -12806,7 +12806,8 @@
     "title": "Leverandørstatistikk",
     "description": "Trafikk, ventetid og suksessrater per leverandør og modell",
     "combo": "Kombinasjon",
-    "toggleModels": "Vis modeller for {provider}"
+    "toggleModels": "Vis modeller for {provider}",
+    "windowSince": "Siden {date}"
   },
   "relay": {
     "title": "Serverløse relé-proxyer",

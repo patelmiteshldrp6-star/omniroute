@@ -12806,7 +12806,8 @@
     "title": "Pakalpojumu sniedzēju statistika",
     "description": "Katra pakalpojumu sniedzēja un modeļa datplūsma, latentums un sekmīgo pieprasījumu īpatsvars",
     "combo": "Kombinēti",
-    "toggleModels": "Rādīt pakalpojumu sniedzēja {provider} modeļus"
+    "toggleModels": "Rādīt pakalpojumu sniedzēja {provider} modeļus",
+    "windowSince": "Kopš {date}"
   },
   "relay": {
     "title": "Bezserveru releju starpniekserveri",

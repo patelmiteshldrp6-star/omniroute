@@ -12806,7 +12806,8 @@
     "title": "プロバイダー統計",
     "description": "プロバイダー別およびモデル別のトラフィック、レイテンシー、成功率",
     "combo": "コンボ",
-    "toggleModels": "{provider} のモデルを表示"
+    "toggleModels": "{provider} のモデルを表示",
+    "windowSince": "{date}以降"
   },
   "relay": {
     "title": "サーバーレスリレープロキシ",

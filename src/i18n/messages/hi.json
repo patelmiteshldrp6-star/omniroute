@@ -12806,7 +12806,8 @@
     "title": "प्रदाता के आँकड़े",
     "description": "प्रत्येक प्रदाता और प्रत्येक मॉडल का ट्रैफ़िक, विलंबता और सफलता दर",
     "combo": "संयोजन",
-    "toggleModels": "{provider} के मॉडल दिखाएँ"
+    "toggleModels": "{provider} के मॉडल दिखाएँ",
+    "windowSince": "{date} से"
   },
   "relay": {
     "title": "सर्वरलेस रिले प्रॉक्सी",

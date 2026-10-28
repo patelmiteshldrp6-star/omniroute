@@ -12806,7 +12806,8 @@
     "title": "فراہم کنندہ کے اعداد و شمار",
     "description": "فی فراہم کنندہ اور فی ماڈل ٹریفک، تاخیر اور کامیابی کی شرحیں",
     "combo": "کومبو",
-    "toggleModels": "{provider} کے ماڈلز دکھائیں"
+    "toggleModels": "{provider} کے ماڈلز دکھائیں",
+    "windowSince": "{date} سے"
   },
   "relay": {
     "title": "سرور لیس ریلے پراکسیز",

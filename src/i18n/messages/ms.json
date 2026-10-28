@@ -12806,7 +12806,8 @@
     "title": "Statistik penyedia",
     "description": "Trafik, kependaman dan kadar kejayaan mengikut penyedia dan model",
     "combo": "Gabungan",
-    "toggleModels": "Tunjukkan model untuk {provider}"
+    "toggleModels": "Tunjukkan model untuk {provider}",
+    "windowSince": "Sejak {date}"
   },
   "relay": {
     "title": "Proksi Geganti Tanpa Pelayan",

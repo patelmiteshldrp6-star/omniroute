@@ -12883,7 +12883,8 @@
     "title": "提供者统计信息",
     "description": "按提供者和模型统计的流量、延迟和成功率",
     "combo": "组合",
-    "toggleModels": "显示 {provider} 的模型"
+    "toggleModels": "显示 {provider} 的模型",
+    "windowSince": "自 {date}"
   },
   "relay": {
     "title": "Serverless 中继代理",

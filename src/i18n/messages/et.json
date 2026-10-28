@@ -12806,7 +12806,8 @@
     "title": "Teenusepakkujate statistika",
     "description": "Liiklus, latentsus ja edukusmäärad teenusepakkujate ning mudelite kaupa",
     "combo": "Kombinatsioon",
-    "toggleModels": "Kuva teenusepakkuja {provider} mudelid"
+    "toggleModels": "Kuva teenusepakkuja {provider} mudelid",
+    "windowSince": "Alates {date}"
   },
   "relay": {
     "title": "Serverivabad releeproksid",

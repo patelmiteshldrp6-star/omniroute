@@ -12806,7 +12806,8 @@
     "title": "Takwimu za mtoa huduma",
     "description": "Trafiki, muda wa kusubiri na viwango vya mafanikio kwa kila mtoa huduma na kila modeli",
     "combo": "Mchanganyiko",
-    "toggleModels": "Onyesha modeli za {provider}"
+    "toggleModels": "Onyesha modeli za {provider}",
+    "windowSince": "Tangu {date}"
   },
   "relay": {
     "title": "Proksi za Relay Zisizo na Seva",
