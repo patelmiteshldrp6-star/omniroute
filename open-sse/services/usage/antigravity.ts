@@ -17,15 +17,14 @@ import {
   getAntigravityFetchAvailableModelsUrls,
 } from "../../config/antigravityUpstream.ts";
 import {
-  isUserVisibleAntigravityQuotaModelId,
+  isDiscoverableAntigravityModelId,
   toClientAntigravityQuotaModelId,
 } from "../../config/antigravityModelAliases.ts";
-import { isUserVisibleAgyQuotaModelId } from "../../config/agyModels.ts";
+import { isUserCallableAgyModelId } from "../../config/agyModels.ts";
 import { getDbInstance } from "@/lib/db/core";
 import {
   applyAntigravityClientProfileHeaders,
   getAntigravityClientProfile,
-  resolveAntigravityClientVersion,
   type AntigravityClientProfile,
 } from "../antigravityClientProfile.ts";
 import {
@@ -577,11 +576,6 @@ export async function getAntigravityUsage(
   let subscriptionInfo: unknown = null;
   try {
     const clientProfile = getAntigravityClientProfile({ providerSpecificData });
-    // Warm the client-version cache before any Cloud Code call: every request below builds
-    // its User-Agent from the synchronous cache, and on a cold process (dashboard poll before
-    // any chat request) that would otherwise be the static fallback. Best-effort — the
-    // resolver swallows feed errors, caches for 6h and coalesces concurrent lookups.
-    await resolveAntigravityClientVersion(clientProfile);
     subscriptionInfo = await getAntigravitySubscriptionInfoCached(
       accessToken,
       providerSpecificData,
@@ -622,10 +616,11 @@ export async function getAntigravityUsage(
       );
     }
 
+    const plan = getAntigravityPlanLabel(subscriptionInfo, providerSpecificData);
     const [data, userQuotaData, quotaSummary] = await Promise.all([
       fetchAntigravityAvailableModelsCached(accessToken, projectId, clientProfile, options),
       fetchAntigravityUserQuotaCached(accessToken, projectId, clientProfile, options),
-      fetchAndParseAntigravityQuotaSummary(accessToken, projectId, clientProfile, options),
+      fetchAndParseAntigravityQuotaSummary(accessToken, projectId, "cli", { ...options, plan }),
     ]);
     const dataObj = toRecord(data);
     if (dataObj.__antigravityForbidden === true) {
@@ -662,8 +657,8 @@ export async function getAntigravityUsage(
         !modelKey ||
         info.isInternal === true ||
         !(provider === "agy"
-          ? isUserVisibleAgyQuotaModelId(modelKey)
-          : isUserVisibleAntigravityQuotaModelId(modelKey)) ||
+          ? isUserCallableAgyModelId(modelKey)
+          : isDiscoverableAntigravityModelId(modelKey)) ||
         Object.keys(quotaInfo).length === 0
       ) {
         continue;
@@ -672,12 +667,12 @@ export async function getAntigravityUsage(
       addLiveModelId(modelKey);
       const liveQuota = userQuotaEntries.get(modelKey);
       const quotaSource = liveQuota || quotaInfo;
-      const rawFraction = toNumber(quotaSource.remainingFraction, Number.NaN);
+      const rawFraction = toNumber(quotaSource.remainingFraction, -1);
       const resetAt = parseResetTime(quotaSource.resetTime);
       // Distinguish "upstream did not report remainingFraction" from "remaining is 0%".
       // fetchAvailableModels is a catalog view and can be stale/full; retrieveUserQuota is
       // the source of truth for actual Gemini consumption when it includes the model.
-      const fractionReported = Number.isFinite(rawFraction);
+      const fractionReported = rawFraction >= 0;
       if (!fractionReported) {
         console.warn(
           `[Antigravity] model ${modelKey} returned no remainingFraction — quota unknown`
@@ -687,22 +682,18 @@ export async function getAntigravityUsage(
       // Models with no resetTime AND a reported full fraction are unlimited
       // (e.g. tab-completion models). Unreported fraction is NEVER unlimited.
       const isUnlimited = fractionReported && !resetAt && remainingFraction >= 1;
+      const remainingPercentage = remainingFraction * 100;
       const QUOTA_NORMALIZED_BASE = 1000;
-      const total = fractionReported ? QUOTA_NORMALIZED_BASE : 0;
+      const total = QUOTA_NORMALIZED_BASE;
       const remaining = Math.round(total * remainingFraction);
       const used = isUnlimited ? 0 : Math.max(0, total - remaining);
 
       quotas[modelKey] = applyLocalUsageFallback(
         {
-          // An omitted fraction is unknown, not a 0% sentinel. Keep the reset
-          // timestamp for display, but omit numeric quota fields so cache and
-          // preflight fail open rather than turning uncertainty into exhaustion.
           used,
           total: isUnlimited ? 0 : total,
           resetAt,
-          ...(fractionReported && {
-            remainingPercentage: isUnlimited ? 100 : remainingFraction * 100,
-          }),
+          remainingPercentage: isUnlimited ? 100 : remainingPercentage,
           unlimited: isUnlimited,
           fractionReported,
           quotaSource: liveQuota ? "retrieveUserQuota" : "fetchAvailableModels",
@@ -720,8 +711,8 @@ export async function getAntigravityUsage(
       if (
         quotas[modelKey] ||
         !(provider === "agy"
-          ? isUserVisibleAgyQuotaModelId(modelKey)
-          : isUserVisibleAntigravityQuotaModelId(modelKey))
+          ? isUserCallableAgyModelId(modelKey)
+          : isDiscoverableAntigravityModelId(modelKey))
       ) {
         continue;
       }
@@ -751,13 +742,21 @@ export async function getAntigravityUsage(
         const family = getAntigravityQuotaFamily(modelId);
         return (
           (group.id === "gemini" && family === "gemini") ||
-          (group.id === "claude_gpt" && family === "claude")
+          (group.id === "claude_gpt" && family === "claude") ||
+          (group.id === "gemini_4_argon" && family === "argon")
         );
       }),
     }));
 
+    const hasArgon =
+      plan === "Ultra"
+        ? true
+        : typeof quotaSummary.hasArgon === "boolean"
+          ? quotaSummary.hasArgon
+          : undefined;
+
     return {
-      plan: getAntigravityPlanLabel(subscriptionInfo, providerSpecificData),
+      plan,
       quotaGroups,
       quotas: {
         ...quotas,
@@ -773,6 +772,7 @@ export async function getAntigravityUsage(
         }),
       },
       subscriptionInfo,
+      ...(typeof hasArgon === "boolean" ? { hasArgon } : {}),
     };
   } catch (error) {
     return {
