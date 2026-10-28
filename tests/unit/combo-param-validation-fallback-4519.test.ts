@@ -11,6 +11,7 @@ import assert from "node:assert/strict";
 //      400 and rate-limit as 429 (instead of rewriting everything to 502).
 
 const { checkFallbackError } = await import("../../open-sse/services/accountFallback.ts");
+const { isRequestScoped400 } = await import("../../open-sse/services/accountFallback/requestScoped400.ts");
 const { isContextOverflow400, isContextOverflowFailure, isParamValidation400, isModelScoped400 } =
   await import("../../open-sse/services/combo.ts");
 const { normalizeUpstreamFailure } =
@@ -45,10 +46,18 @@ test("structured context overflow codes are recognized with generic or empty mes
 });
 
 test("token-rate-limit wording is not classified as context overflow", () => {
-  assert.equal(isContextOverflow400("input exceeds maximum input tokens per minute"), false);
-  assert.equal(isContextOverflow400("Rate limit reached for tokens per minute"), false);
-  assert.equal(isContextOverflow400("TPM limit exceeded"), false);
-  assert.equal(isContextOverflow400("RPM quota exceeded for this key"), false);
+  const samples = [
+    "input exceeds maximum input tokens per minute",
+    "Rate limit reached for tokens per minute",
+    "TPM limit exceeded",
+    "RPM quota exceeded for this key",
+  ];
+  for (const sample of samples) {
+    assert.equal(isContextOverflow400(sample), false);
+    const fallback = checkFallbackError(400, sample, 0, null, "openai");
+    assert.notEqual(fallback.reason, "MODEL_CAPACITY");
+    assert.equal(isRequestScoped400(400, sample), false);
+  }
 });
 
 test("#4519 combo guard: a genuinely body-specific 400 is NOT classified as overflow/param", () => {

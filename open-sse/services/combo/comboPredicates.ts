@@ -19,6 +19,8 @@ import {
 } from "@/shared/utils/circuitBreaker";
 import {
   CONTEXT_OVERFLOW_PATTERNS,
+  isContextOverflowText,
+  isTokenRateLimitWording,
   PARAM_VALIDATION_PATTERNS,
   RATE_LIMIT_TEXT_PATTERNS,
   AUTH_CREDENTIAL_ERROR_PATTERNS,
@@ -801,21 +803,13 @@ export async function resolvePersistedConnectionCooldownSkipReason(
 export function isContextOverflow400(errorText: string | null | undefined): boolean {
   const text = String(errorText || "");
   if (!text) return false;
-  // Rate-limit TPM/RPM wording must never be mistaken for context overflow.
-  if (
-    /maximum input tokens?\s+per\s+(?:minute|second|hour|day)\b/i.test(text) ||
-    /\btokens?\s+per\s+(?:minute|second|hour|day)\b/i.test(text) ||
-    /\btpm\b/i.test(text) ||
-    /\brpm\b/i.test(text)
-  ) {
-    return false;
-  }
+  if (isTokenRateLimitWording(text)) return false;
   return (
     /\bcontext.*(?:length_exceeded|too long|overflow|exceeded|window|limit)\b/i.test(text) ||
     /exceeds.*context/i.test(text) ||
     /input exceeds maximum input tokens(?:\s*[,.]|$)/i.test(text) ||
     /your input exceeds/i.test(text) ||
-    CONTEXT_OVERFLOW_PATTERNS.some((p) => p.test(text))
+    isContextOverflowText(text)
   );
 }
 
